@@ -1,0 +1,796 @@
+/* ============ Tokens ============ */
+:root {
+  --mesa: #f3ede3;          /* fundo: branco quente */
+  --papel: #fbf8f2;         /* folhas do fichário */
+  --papel-2: #f6f0e4;
+  --tinta: #2b2622;
+  --tinta-2: #5f564d;
+  --tinta-3: #8b8178;
+  --linha: #e3d9c8;
+  --rosa: #ec4f9f;          /* detalhe da referência de download */
+  --rosa-fb: #f4a6c3;       /* rosa da logo Fake Blonde */
+  --sombra-folha: 0 1px 0 rgba(60,40,20,.05), 0 18px 40px -22px rgba(60,40,20,.35);
+  --serifa: "Newsreader", Georgia, "Times New Roman", serif;
+  --texto: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  --e1: 4px; --e2: 8px; --e3: 12px; --e4: 16px; --e5: 24px; --e6: 32px; --e7: 48px; --e8: 72px;
+  --ease: cubic-bezier(.2,.7,.2,1);
+  --textura: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35 0 0 0 0 .25 0 0 0 0 .15 0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  /* argola: arco de metal cujas pontas caem nos furos (x=6 e x=50, y=19) */
+  --argola: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='56' height='26' viewBox='0 0 56 26'><defs><linearGradient id='m' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23ffffff'/><stop offset='.35' stop-color='%23d4d6d8'/><stop offset='.6' stop-color='%23868a8f'/><stop offset='1' stop-color='%23b9bcbf'/></linearGradient><filter id='b' x='-20%' y='-40%' width='140%' height='180%'><feGaussianBlur stdDeviation='1.3'/></filter></defs><path d='M7.5 22 C 9 6, 47 6, 48.5 22' fill='none' stroke='rgba(50,30,10,.28)' stroke-width='4' stroke-linecap='round' filter='url(%23b)'/><path d='M6 19 C 7.5 3, 48.5 3, 50 19' fill='none' stroke='url(%23m)' stroke-width='4.2' stroke-linecap='round'/><path d='M10 12 C 18 6, 38 6, 46 12' fill='none' stroke='rgba(255,255,255,.75)' stroke-width='1' stroke-linecap='round'/></svg>");
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--mesa) var(--textura);
+  color: var(--tinta);
+  font: 16px/1.6 var(--texto);
+  min-height: 100vh;
+  display: flow-root;
+}
+img, video { display: block; max-width: 100%; height: auto; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--rosa); outline-offset: 3px; border-radius: 2px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ============ Fichário (moldura comum) ============ */
+.fichario {
+  position: relative;
+  max-width: 1240px;
+  margin: var(--e6) auto var(--e7);
+  padding: 0 64px 0 var(--e6);
+}
+.folha {
+  position: relative;
+  background: var(--papel) var(--textura);
+  border-radius: 4px;
+  box-shadow: var(--sombra-folha);
+}
+
+/* furos + argolas: mesmas posições (--y) nos dois lados */
+.furo {
+  position: absolute; top: var(--y); width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px;
+  border-radius: 50%; background: #d9cfbf;
+  box-shadow: inset 0 1.5px 2px rgba(40,25,10,.45), 0 .5px 0 rgba(255,255,255,.8);
+  pointer-events: none;
+}
+.argola {
+  position: absolute; z-index: 6; top: var(--y); width: 56px; height: 26px; margin-top: -19px;
+  background: var(--argola) no-repeat center / 56px 26px;
+  pointer-events: none;
+}
+
+/* Índice: argolas atravessam o vão entre as páginas (furos a 22px do vão) */
+.abertura .esq .furo { left: calc(100% - 22px); }
+.abertura .dir .furo { left: 22px; }
+.abertura .argola { left: 50%; margin-left: -28px; }
+
+/* Internas: furos a 30px da borda esquerda; argola dá a volta pela borda */
+.interna > .folha > .furo { left: 30px; }
+.interna > .folha > .argola { left: -14px; }
+
+/* divisórias (navegação) */
+.divisorias {
+  position: absolute; right: 8px; top: 48px;
+  display: flex; flex-direction: column; gap: 6px;
+  margin: 0; padding: 0; list-style: none;
+}
+.divisorias a {
+  display: flex; align-items: center; justify-content: center;
+  writing-mode: vertical-rl;
+  width: 44px; height: clamp(98px, 13vh, 112px);
+  background: var(--papel-2) var(--textura);
+  border: 1px solid var(--linha); border-left: 0;
+  border-radius: 0 8px 8px 0;
+  font: 500 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase;
+  color: var(--tinta-2); text-decoration: none;
+  box-shadow: 3px 6px 12px -8px rgba(60,40,20,.4);
+  transition: transform .2s var(--ease), color .2s, background-color .2s;
+}
+.divisorias a:hover, .divisorias a:focus-visible { transform: translateX(4px); color: var(--tinta); }
+.divisorias a[aria-current="page"] { background: var(--papel); color: var(--tinta); transform: translateX(-2px); }
+
+/* ============ Índice: abertura de duas páginas, cabe na tela ============ */
+.fichario.abre { margin-top: clamp(12px, 2.4vh, 32px); margin-bottom: clamp(12px, 2.4vh, 32px); }
+.abertura {
+  display: grid; grid-template-columns: 1fr 1fr;
+  height: clamp(560px, calc(100vh - 2 * clamp(12px, 2.4vh, 32px)), 820px);
+  height: clamp(560px, calc(100dvh - 2 * clamp(12px, 2.4vh, 32px)), 820px);
+}
+.abertura > .folha { padding: clamp(24px, 4.4vh, 48px) clamp(32px, 4vw, 52px); }
+.abertura .esq { border-radius: 4px 0 0 4px; padding-right: 64px; display: flex; flex-direction: column; }
+.abertura .dir { border-radius: 0 4px 4px 0; padding-left: 64px; box-shadow: var(--sombra-folha), inset 14px 0 18px -16px rgba(60,40,20,.35); display: flex; flex-direction: column; }
+
+.foto-principal { position: relative; margin: 6px 0 0; align-self: flex-start; }
+.foto-principal .moldura {
+  background: #fff; padding: 9px 9px 30px;
+  box-shadow: 0 10px 24px -14px rgba(40,25,10,.5);
+  transform: rotate(-1.2deg);
+}
+.foto-principal img { height: clamp(170px, 31vh, 320px); width: auto; aspect-ratio: 1740/1080; object-fit: cover; max-width: 100%; }
+.foto-principal figcaption { position: absolute; left: 20px; bottom: 8px; font: 12px/1 var(--mono); color: var(--tinta-3); transform: rotate(-1.2deg); }
+.fita {
+  position: absolute; width: 88px; height: 24px; top: -10px; left: 50%;
+  background: rgba(233, 220, 195, .78);
+  transform: translateX(-50%) rotate(-3deg);
+  box-shadow: 0 1px 2px rgba(0,0,0,.08);
+}
+.apres-topo { margin-top: auto; margin-bottom: auto; padding-top: clamp(40px, 7vh, 72px); }
+.nome { font: 400 clamp(34px, 5.4vh, 54px)/1.02 var(--serifa); letter-spacing: -.01em; margin: 0 0 var(--e3); }
+.apresentacao { max-width: 38ch; color: var(--tinta-2); margin: 0; font-size: clamp(15px, 1.9vh, 17px); line-height: 1.55; }
+
+/* Creative Licence */
+.licenca-area { position: absolute; right: -48px; bottom: -44px; z-index: 4; }
+.licenca {
+  position: relative; display: grid; grid-template-columns: 64px 1fr; gap: 10px; align-items: center;
+  width: 240px; padding: 11px 14px 11px 11px;
+  background: #fbf3c9;
+  border: 1px solid rgba(120,100,40,.25); border-radius: 10px;
+  box-shadow: inset 0 0 0 4px rgba(255,255,255,.55), 0 14px 26px -14px rgba(40,25,10,.55);
+  transform: rotate(4deg);
+  transition: transform .35s var(--ease);
+  color: var(--tinta); text-decoration: none;
+}
+.licenca:hover, .licenca:focus-visible { transform: rotate(1deg) translateY(-4px); }
+.licenca .retrato { width: 64px; height: 80px; background: #fff; border-radius: 4px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); }
+.licenca .retrato img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; image-rendering: pixelated; }
+.licenca .tipo { font: 600 9px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: #8a7420; display: block; margin-bottom: 4px; }
+.licenca strong { display: block; font: 500 17px/1.1 var(--serifa); }
+.licenca small { display: block; font-size: 11.5px; line-height: 1.3; color: var(--tinta-2); margin-top: 3px; }
+/* clipe + folha "Sobre mim" presa à carteirinha */
+.clipe-sobre {
+  position: absolute; right: 16px; top: -46px; z-index: -1;
+  display: block; padding: 10px 14px 22px; width: 116px;
+  background: var(--papel) var(--textura);
+  border: 1px solid var(--linha);
+  box-shadow: 0 8px 18px -12px rgba(40,25,10,.45);
+  transform: rotate(7deg);
+  font: italic 400 17px/1.1 var(--serifa); color: var(--tinta); text-decoration: none;
+  transition: transform .3s var(--ease);
+}
+.clipe-sobre:hover, .clipe-sobre:focus-visible { transform: rotate(9deg) translate(2px, -10px); }
+.clipe-sobre svg { position: absolute; left: 18px; bottom: -30px; width: 20px; height: 48px; }
+
+/* ============ Pastas (só o nome) ============ */
+.pastas-titulo { font: 500 12px/1 var(--mono); letter-spacing: .02em; color: var(--tinta-3); margin: 0 0 clamp(20px, 4vh, 36px); }
+.pastas {
+  --h-pasta: clamp(104px, 24vh, 214px);
+  flex: 1; display: grid; grid-template-columns: 1fr 1fr; align-content: center;
+  gap: clamp(14px, 3vh, 30px) var(--e6); margin: 0; padding: 0; list-style: none;
+}
+.pasta-link { display: block; text-decoration: none; color: inherit; width: min(100%, calc(var(--h-pasta) * 1.25)); }
+.pasta { position: relative; aspect-ratio: 5 / 4; margin: 0 0 var(--e3); }
+.pasta .fundo {
+  position: absolute; inset: 10% 0 0 0;
+  border-radius: 4px 12px 12px 12px;
+  background: var(--cor-fundo, #ddd2bf);
+}
+.pasta .fundo::before { /* aba */
+  content: ""; position: absolute; left: 0; top: -13%; width: 42%; height: 15%;
+  background: inherit; border-radius: 10px 14px 0 0;
+  clip-path: polygon(0 0, 82% 0, 100% 100%, 0 100%);
+}
+.pasta .dentro { position: absolute; inset: -4% 7% 22% 7%; }
+.pasta .frente {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 70%;
+  border-radius: 12px;
+  background: var(--cor-frente, #efe6d6);
+  box-shadow: 0 -1px 0 rgba(255,255,255,.7) inset, 0 16px 26px -16px rgba(40,25,10,.55), 0 2px 4px rgba(40,25,10,.08);
+  display: grid; place-items: center;
+}
+.pasta .frente::after { /* vinco */
+  content: ""; position: absolute; left: 10%; right: 10%; bottom: 15%; height: 2px;
+  border-top: 1px solid rgba(0,0,0,.06); border-bottom: 1px solid rgba(255,255,255,.5);
+}
+.pasta .dentro > * { transition: transform .35s var(--ease); }
+.pasta-link:hover .dentro > *, .pasta-link:focus-visible .dentro > * { transform: translateY(-7px) rotate(var(--r, 0deg)); }
+.pasta-link:hover .dentro > :nth-child(2), .pasta-link:focus-visible .dentro > :nth-child(2) { transform: translateY(-11px) rotate(var(--r, 0deg)); }
+.rotulo { font: 400 clamp(19px, 2.6vh, 24px)/1.15 var(--serifa); margin: 0; }
+
+/* papéis só com pauta */
+.folhinha {
+  position: absolute; height: 92%; background: var(--papel); border: 1px solid var(--linha);
+  box-shadow: 0 2px 6px rgba(40,25,10,.12); transform: rotate(var(--r, 0deg));
+}
+.folhinha::before { content: ""; position: absolute; inset: 16% 12% 10%; background: repeating-linear-gradient(transparent 0 9px, var(--linha) 9px 10px); }
+.pasta--textos { --cor-fundo: #d8c8a8; --cor-frente: #e9dcc3; }
+.folhinha.f1 { left: 2%; top: 10%; width: 58%; --r: -5deg; }
+.folhinha.f2 { right: 2%; top: 0; width: 56%; --r: 4deg; }
+
+/* Fotografia: conjunto saindo de trás da aba + frente translúcida */
+.pasta--fotos { --cor-fundo: #d5d5d1; --cor-frente: rgba(250, 249, 246, .55); }
+.pasta--fotos .frente { backdrop-filter: blur(8px) saturate(1.05); -webkit-backdrop-filter: blur(8px) saturate(1.05); border: 1px solid rgba(255,255,255,.75); }
+.mini-foto { position: absolute; background: #fff; padding: 4px; border-radius: 6px; box-shadow: 0 3px 8px rgba(40,25,10,.22); transform: rotate(var(--r, 0deg)); transform-origin: 50% 100%; }
+.mini-foto img { width: 100%; height: 100%; object-fit: cover; border-radius: 3px; }
+.pasta--fotos .dentro { inset: -16% 6% 24% 6%; }
+.mini-foto.m1 { left: 0; top: 16%; width: 52%; aspect-ratio: 3/2; --r: -9deg; }
+.mini-foto.m2 { left: 26%; top: 2%; width: 46%; aspect-ratio: 3/2; --r: -1deg; z-index: 2; }
+.mini-foto.m3 { right: -2%; top: 12%; width: 50%; aspect-ratio: 3/2; --r: 8deg; }
+
+/* Trabalhos */
+.pasta--trabalhos { --cor-fundo: #7a5443; --cor-frente: #8d6350; }
+.capinha { position: absolute; width: 56%; aspect-ratio: 4/3; background: #fff; padding: 4px; box-shadow: 0 3px 8px rgba(0,0,0,.25); transform: rotate(var(--r,0deg)); }
+.capinha img { width: 100%; height: 100%; object-fit: cover; }
+.capinha.c1 { left: 2%; top: 6%; --r: -5deg; }
+.capinha.c2 { right: 2%; top: 0; --r: 4deg; }
+
+/* Currículo: rosa translúcido com seta */
+.pasta--cv { --cor-fundo: #f468b0; --cor-frente: rgba(252, 160, 205, .78); }
+.pasta--cv .frente { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.pasta--cv .frente svg { width: 24%; max-width: 54px; height: auto; transition: transform .3s var(--ease); }
+.pasta-link:hover .pasta--cv .frente svg, .pasta-link:focus-visible .pasta--cv .frente svg { transform: translateY(5px); }
+.pasta--cv .dentro .folhinha { left: 20%; top: 2%; width: 60%; --r: 2deg; }
+
+/* ============ Páginas internas ============ */
+.interna > .folha { padding: var(--e7) var(--e7) var(--e8) 96px; min-height: calc(100vh - 96px); }
+.cabeca { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--e4); margin-bottom: var(--e7); border-bottom: 1px solid var(--linha); padding-bottom: var(--e5); }
+.voltar { display: inline-flex; align-items: center; gap: 6px; font: 500 13px/1 var(--mono); color: var(--tinta-2); text-decoration: none; margin-bottom: var(--e5); }
+.voltar:hover, .voltar:focus-visible { color: var(--tinta); }
+.cabeca h1 { font: 400 clamp(40px, 6vw, 76px)/1 var(--serifa); margin: 0; letter-spacing: -.01em; }
+.cabeca .sub { margin: 12px 0 0; max-width: 46ch; color: var(--tinta-2); font: 400 20px/1.45 var(--serifa); }
+.ficha { font: 12px/1.5 var(--mono); color: var(--tinta-3); letter-spacing: .04em; }
+.atalho { font: 500 13px/1 var(--mono); color: var(--tinta-2); text-underline-offset: 4px; }
+.atalho:hover, .atalho:focus-visible { color: var(--rosa); }
+.carimbo { display: inline-block; padding: 2px 6px; border: 1.5px solid #c4352b; color: #c4352b; font: 600 10px/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; transform: rotate(-3deg); }
+.aviso-rascunho { background: #fff3b8; border: 1px dashed #c9a400; padding: 10px 14px; font: 13px/1.4 var(--mono); margin-bottom: var(--e5); }
+
+/* Textos: seção */
+.frente-textos { margin-bottom: var(--e8); }
+.frente-textos > header { display: grid; grid-template-columns: minmax(0, 300px) 1fr; gap: var(--e6); margin-bottom: var(--e4); align-items: start; }
+.frente-textos h2 { display: flex; align-items: center; gap: 10px; font: 400 32px/1.05 var(--serifa); margin: 0; }
+.frente-textos h2 img { width: 30px; height: auto; }
+.frente-textos h2 small { display: block; font: 12px/1.4 var(--mono); color: var(--tinta-3); margin-top: 6px; }
+.frente-textos > header p { margin: 0; color: var(--tinta-2); max-width: 56ch; }
+.credito { font: 12px/1.5 var(--mono); color: var(--tinta-3); margin-top: 6px !important; }
+.folhas { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--e5); list-style: none; margin: 0; padding: 0; }
+
+/* Folha com hover: a frente sobe dentro do espaço reservado (nunca passa do topo do item) */
+.texto { --sobe: 92px; position: relative; height: calc(310px + var(--sobe)); }
+.texto a { position: absolute; inset: 0; display: block; text-decoration: none; color: inherit; }
+.texto .verso {
+  position: absolute; left: 8px; right: 8px; bottom: 0; height: 150px;
+  background: var(--papel-2); border: 1px solid var(--linha);
+  padding: 14px 16px; display: flex; align-items: flex-end;
+}
+.texto .verso p { margin: 0; font: italic 400 15px/1.42 var(--serifa); color: var(--tinta-2); }
+.texto .rosto {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 310px; overflow: hidden;
+  background: var(--papel) var(--textura); border: 1px solid var(--linha);
+  box-shadow: 0 10px 20px -14px rgba(40,25,10,.45);
+  display: flex; flex-direction: column;
+  transition: transform .45s var(--ease);
+}
+.texto .capa-post { position: relative; height: 128px; margin: 10px 10px 0; overflow: hidden; background: var(--papel-2); }
+.texto .capa-post img { width: 100%; height: 100%; object-fit: cover; opacity: .34; filter: saturate(.75) contrast(.95); mix-blend-mode: multiply; }
+.texto .capa-post::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 55%, var(--papel)); }
+.texto .logo-fb { position: absolute; right: 12px; top: 12px; width: 26px; height: auto; z-index: 2; filter: drop-shadow(0 1px 1px rgba(0,0,0,.12)); }
+.texto .corpo-folha { padding: 6px 18px 16px; display: flex; flex-direction: column; flex: 1; }
+.texto time { font: 12px/1 var(--mono); color: var(--tinta-3); letter-spacing: .04em; }
+.texto h3 { font: 400 22px/1.15 var(--serifa); margin: 8px 0 4px; text-wrap: balance; }
+.texto .subtitulo { margin: 0; font-size: 13.5px; line-height: 1.4; color: var(--tinta-2); }
+.texto .ler { margin-top: auto; font: 500 12.5px/1 var(--mono); color: var(--tinta-2); }
+.texto .ler::after { content: " ↗"; }
+.texto a:hover .rosto, .texto a:focus-visible .rosto { transform: translateY(calc(-1 * var(--sobe))); }
+.texto a:hover .ler, .texto a:focus-visible .ler { color: var(--rosa); }
+.texto a:focus-visible { outline: none; }
+.texto a:focus-visible .rosto { outline: 2px solid var(--rosa); outline-offset: 3px; }
+/* folhas sem capa (Outros textos) */
+.texto.simples { height: calc(250px + var(--sobe)); }
+.texto.simples .rosto { height: 250px; }
+.texto.simples .corpo-folha { padding-top: 20px; }
+.texto .carimbo { align-self: flex-start; margin-top: 6px; }
+
+/* Caneta Fake Blonde */
+.caneta {
+  position: absolute; z-index: 8; right: 12px; top: 300px;
+  width: 26px; height: 150px; padding: 0; border: 0; background: none; cursor: pointer;
+  transform: rotate(16deg); transform-origin: 50% 0;
+  transition: transform .3s var(--ease);
+}
+.caneta svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(2px 4px 3px rgba(40,25,10,.25)); }
+.caneta:hover, .caneta:focus-visible { transform: rotate(10deg) translateY(-4px); }
+.caneta[aria-pressed="true"] { transform: rotate(-22deg) translate(-10px, 6px); }
+.caneta-dica {
+  position: absolute; z-index: 8; right: 8px; top: 462px; margin: 0; width: 120px; text-align: right;
+  font: italic 400 14px/1.2 var(--serifa); color: var(--tinta-3);
+  opacity: 0; transition: opacity .25s;
+}
+.caneta:hover + .caneta-dica, .caneta:focus-visible + .caneta-dica, .caneta[aria-pressed="true"] + .caneta-dica { opacity: 1; }
+.rabisco { position: absolute; inset: 0; z-index: 7; pointer-events: none; }
+.rabiscando .rabisco { pointer-events: auto; cursor: crosshair; touch-action: none; }
+
+/* Fotografia: galeria de ensaio */
+.galeria { display: flex; flex-direction: column; gap: clamp(28px, 6vw, 88px); }
+.galeria .linha { display: flex; gap: clamp(14px, 2.4vw, 32px); align-items: flex-start; }
+.galeria .linha.grande { justify-content: center; }
+.galeria .linha.grande.paisagem figure { width: 100%; }
+.galeria .linha.grande.retrato figure { width: min(62%, 560px); }
+.galeria .linha.par figure:nth-child(2) { margin-top: clamp(24px, 6vw, 80px); }
+.galeria figure { margin: 0; }
+.galeria button { all: unset; display: block; cursor: zoom-in; width: 100%; }
+.galeria button:focus-visible { outline: 2px solid var(--rosa); outline-offset: 4px; }
+.galeria img { width: 100%; height: auto; background: var(--papel-2); }
+.galeria figcaption { font: 12px/1.4 var(--mono); color: var(--tinta-3); margin-top: 8px; }
+
+.lightbox { border: 0; padding: 0; margin: 0; width: 100vw; height: 100dvh; max-width: none; max-height: none; background: rgba(28, 24, 20, .95); color: #f3ede3; }
+.lightbox::backdrop { background: transparent; }
+.lightbox[open] { display: grid; grid-template-rows: auto 1fr auto; }
+.lightbox .barra { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; font: 12px/1 var(--mono); letter-spacing: .08em; }
+.lightbox .palco { display: grid; place-items: center; min-height: 0; padding: 0 64px; }
+.lightbox .palco img, .lightbox .palco video { max-width: 100%; max-height: calc(100dvh - 120px); object-fit: contain; }
+.lightbox button { background: none; border: 1px solid rgba(243,237,227,.35); color: inherit; font: 12px/1 var(--mono); letter-spacing: .04em; padding: 10px 14px; border-radius: 6px; cursor: pointer; }
+.lightbox button:hover { border-color: #f3ede3; }
+.lightbox .seta { position: fixed; top: 50%; transform: translateY(-50%); padding: 14px 16px; }
+.lightbox .seta.ant { left: 12px; } .lightbox .seta.prox { right: 12px; }
+.lightbox .legenda { padding: 12px 18px 18px; min-height: 44px; font: 12px/1.4 var(--mono); color: #c9bfb2; text-align: center; }
+
+/* ============ Trabalhos ============ */
+.projetos { display: flex; flex-direction: column; gap: var(--e8); }
+.projeto .topo { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: var(--e6) var(--e7); align-items: start; }
+.projeto .capa { position: relative; background: #fff; padding: 10px; box-shadow: 0 12px 24px -16px rgba(40,25,10,.55); }
+.projeto .capa img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+.projeto .capa.retrato { justify-self: center; width: min(100%, 420px); }
+.projeto .capa.retrato img { aspect-ratio: 4/5; }
+.projeto .papel { font: 12.5px/1.4 var(--mono); color: var(--tinta-3); margin: 0 0 10px; }
+.projeto h2 { font: 400 clamp(30px, 3.4vw, 44px)/1.05 var(--serifa); margin: 0 0 var(--e4); }
+.projeto .resumo { margin: 0 0 var(--e4); color: var(--tinta-2); max-width: 52ch; }
+.projeto .intro p { font: 400 20px/1.5 var(--serifa); margin: 0 0 var(--e4); max-width: 44ch; }
+.projeto details { margin-top: var(--e5); }
+.projeto summary {
+  list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+  margin-left: calc(52.4% + 8px);
+  font: 500 13px/1 var(--mono); color: var(--tinta-2);
+  padding: 10px 14px; border: 1px solid var(--linha); border-radius: 6px; background: var(--papel-2);
+}
+.projeto summary::-webkit-details-marker { display: none; }
+.projeto summary::before { content: "+"; font-size: 15px; }
+.projeto details[open] summary::before { content: "−"; }
+.projeto summary:hover, .projeto summary:focus-visible { color: var(--tinta); border-color: var(--tinta-3); }
+.projeto .aberto { border-top: 1px solid var(--linha); margin-top: var(--e5); padding-top: var(--e6); }
+.projeto .aberto > p { max-width: 64ch; font-size: 17px; }
+.galeria-projeto { display: grid; grid-template-columns: 1fr 1fr; gap: var(--e5); margin-top: var(--e6); }
+.galeria-projeto .destaque { grid-column: 1 / -1; }
+.galeria-projeto img { width: 100%; }
+.em-breve .capa img { filter: grayscale(.4) opacity(.7); }
+.selo-breve {
+  position: absolute; right: 22px; top: 22px; padding: 6px 12px;
+  background: var(--papel); border: 1.5px solid var(--tinta); color: var(--tinta);
+  font: 600 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; transform: rotate(4deg);
+}
+
+/* Social Media: cases por cliente em carrossel */
+.mosaico { position: relative; height: clamp(300px, 34vw, 420px); }
+.mosaico img { position: absolute; width: 46%; aspect-ratio: 4/5; object-fit: cover; background: #fff; padding: 6px; box-shadow: 0 12px 24px -14px rgba(40,25,10,.55); transition: transform .4s var(--ease); }
+.mosaico img:nth-child(1) { left: 2%; top: 10%; transform: rotate(-6deg); }
+.mosaico img:nth-child(2) { left: 28%; top: 0; z-index: 2; transform: rotate(1deg); }
+.mosaico img:nth-child(3) { right: 2%; top: 14%; transform: rotate(7deg); }
+.case { margin-top: var(--e7); }
+.case header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--e3) var(--e5); margin-bottom: var(--e4); }
+.case h3 { font: 400 28px/1.1 var(--serifa); margin: 0; }
+.case header p { margin: 4px 0 0; color: var(--tinta-2); max-width: 60ch; font-size: 15px; }
+.carrossel-ctrl { display: flex; gap: 6px; }
+.carrossel-ctrl button {
+  width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--linha); background: var(--papel);
+  font: 16px/1 var(--texto); color: var(--tinta); cursor: pointer;
+}
+.carrossel-ctrl button:hover, .carrossel-ctrl button:focus-visible { border-color: var(--tinta-3); }
+.carrossel-ctrl button:disabled { opacity: .35; cursor: default; }
+.carrossel {
+  display: flex; gap: var(--e4); overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 0;
+  padding: 4px 2px 18px; margin: 0; list-style: none; scrollbar-width: thin; scrollbar-color: var(--linha) transparent;
+  overscroll-behavior-x: contain;
+}
+.carrossel li { flex: 0 0 auto; scroll-snap-align: start; }
+.carrossel figure { margin: 0; background: #fff; padding: 6px; box-shadow: 0 10px 20px -14px rgba(40,25,10,.5); }
+.carrossel img, .carrossel video { height: clamp(300px, 46vh, 460px); width: auto; max-width: none; background: var(--papel-2); }
+.carrossel button { all: unset; display: block; cursor: zoom-in; }
+.carrossel button:focus-visible { outline: 2px solid var(--rosa); outline-offset: 3px; }
+
+/* ============ Sobre ============ */
+.sobre { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: var(--e7) clamp(32px, 6vw, 88px); align-items: start; }
+.licenca-grande {
+  position: sticky; top: 32px;
+  background: #fbf3c9; border: 1px solid rgba(120,100,40,.25); border-radius: 12px; padding: 16px;
+  box-shadow: inset 0 0 0 5px rgba(255,255,255,.55), 0 18px 30px -18px rgba(40,25,10,.55);
+  transform: rotate(-2deg); transition: transform .4s var(--ease);
+}
+.licenca-grande:hover { transform: rotate(0deg) translateY(-4px); }
+.licenca-grande .tipo { display: block; font: 600 10px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: #8a7420; margin-bottom: 10px; }
+.licenca-grande .foto { overflow: hidden; border-radius: 6px; background: #fff; }
+.licenca-grande .foto img { width: 100%; aspect-ratio: 4/5; object-fit: cover; object-position: 50% 12%; transition: transform .6s var(--ease); }
+.licenca-grande:hover .foto img { transform: scale(1.04) rotate(-.6deg); }
+.licenca-grande strong { display: block; font: 500 22px/1.1 var(--serifa); margin-top: 12px; }
+.licenca-grande small { display: block; color: var(--tinta-2); font-size: 13px; margin-top: 4px; }
+.sobre .corpo p { font: 400 20px/1.55 var(--serifa); margin: 0 0 var(--e4); max-width: 40ch; }
+.contatos { list-style: none; padding: 0; margin: var(--e6) 0 0; display: flex; flex-wrap: wrap; gap: 10px 14px; }
+.contatos a {
+  position: relative; display: inline-flex; align-items: center; gap: 10px;
+  padding: 10px 14px; min-height: 44px; border: 1px solid var(--linha); border-radius: 8px; background: var(--papel-2);
+  text-decoration: none; font-size: 15px; transition: transform .25s var(--ease), border-color .2s;
+}
+.contatos a:hover, .contatos a:focus-visible { transform: translateY(-3px) rotate(-1deg); border-color: var(--rosa-fb); }
+.contatos svg, .contatos img { width: 20px; height: 20px; flex: none; }
+
+/* coraçõezinhos (hover do Readymag) */
+.coracao-voa {
+  position: absolute; z-index: 30; width: 14px; height: 14px; pointer-events: none;
+  background: url("../img/marca/fake-blonde-logo.png") center / contain no-repeat;
+  animation: voa 1s var(--ease) forwards;
+}
+@keyframes voa {
+  0% { opacity: 0; transform: translate(0, 0) scale(.5); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx, 0), -38px) scale(1) rotate(var(--rot, 0deg)); }
+}
+
+.rodape { max-width: 1240px; margin: 0 auto var(--e6); padding: 0 64px 0 var(--e6); font: 12px/1.4 var(--mono); color: var(--tinta-3); }
+.rodape a { color: var(--tinta-2); }
+
+/* Entrada curta (capa abrindo) */
+@media (prefers-reduced-motion: no-preference) {
+  .abre .esq { animation: abre-esq .45s var(--ease) both; transform-origin: right center; }
+  .abre .dir, .interna > .folha { animation: abre-dir .45s var(--ease) both; }
+  @keyframes abre-esq { from { opacity: 0; transform: perspective(1400px) rotateY(10deg); } }
+  @keyframes abre-dir { from { opacity: 0; transform: translateY(8px); } }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+  .coracao-voa { display: none; }
+}
+
+/* ============ Notebook baixo ============ */
+@media (min-width: 901px) and (max-height: 720px) {
+  .licenca { width: 216px; grid-template-columns: 54px 1fr; }
+  .licenca .retrato { width: 54px; height: 68px; }
+  .licenca-area { right: -40px; bottom: -36px; }
+  .clipe-sobre { top: -40px; padding-bottom: 18px; }
+}
+@media (min-width: 901px) and (max-width: 1180px) {
+  .licenca-area { right: -24px; }
+  .licenca { width: 220px; }
+}
+
+/* ============ Celular e tablet estreito ============ */
+@media (max-width: 900px) {
+  .fichario, .fichario.abre { padding: 0 16px; margin: 0 auto var(--e6); }
+  .divisorias {
+    position: sticky; top: 0; z-index: 20; right: auto;
+    flex-direction: row; gap: 4px; overflow-x: auto; scrollbar-width: none;
+    margin: 0 -16px var(--e3); padding: 10px 16px 0;
+    background: var(--mesa) var(--textura);
+  }
+  .divisorias::-webkit-scrollbar { display: none; }
+  .divisorias a { writing-mode: horizontal-tb; width: auto; height: auto; padding: 12px 12px; border: 1px solid var(--linha); border-bottom: 0; border-radius: 8px 8px 0 0; white-space: nowrap; box-shadow: none; }
+  .divisorias a:hover, .divisorias a[aria-current="page"] { transform: none; }
+  .argola, .furo { display: none; }
+
+  .abertura { display: flex; flex-direction: column; height: auto; }
+  .abertura > .folha { padding: var(--e5) var(--e4); border-radius: 4px; }
+  .abertura .esq { padding-right: var(--e4); padding-bottom: var(--e4); border-radius: 4px 4px 0 0; }
+  .abertura .dir { padding-left: var(--e4); padding-top: var(--e5); border-radius: 0 0 4px 4px; box-shadow: var(--sombra-folha); border-top: 1px dashed var(--linha); }
+  .apres-topo { order: -1; margin: 0; padding: 0; }
+  .nome { font-size: 34px; margin-bottom: 4px; }
+  .apresentacao { font-size: 14.5px; line-height: 1.5; }
+  .foto-principal { margin: var(--e4) 0 30px; width: 74%; max-width: 400px; }
+  .foto-principal img { height: auto; width: 100%; aspect-ratio: 16/10; }
+  .foto-principal .moldura { padding: 5px 5px 18px; }
+  .foto-principal figcaption { bottom: 4px; left: 10px; font-size: 10px; }
+  .licenca-area { right: -38%; bottom: -26px; }
+  .licenca { width: 176px; grid-template-columns: 44px 1fr; gap: 8px; padding: 8px 10px 8px 8px; }
+  .licenca .retrato { width: 44px; height: 56px; }
+  .licenca strong { font-size: 14px; }
+  .licenca small { font-size: 10.5px; }
+  .licenca .tipo { font-size: 8px; }
+  .clipe-sobre { right: 6px; top: -34px; width: 84px; font-size: 13px; padding: 6px 8px 12px; }
+  .pastas-titulo { margin-bottom: var(--e4); }
+  .pastas { --h-pasta: 40vw; gap: var(--e5) var(--e4); }
+  .pasta-link { width: 100%; }
+  .rotulo { font-size: 18px; }
+
+  .interna > .folha { padding: var(--e5) var(--e4) var(--e7); min-height: 0; }
+  .interna > .folha { overflow: clip; }
+  .cabeca { margin-bottom: var(--e6); }
+  .cabeca .sub { font-size: 18px; }
+  .frente-textos > header { grid-template-columns: 1fr; gap: var(--e3); }
+  .folhas { grid-template-columns: 1fr; gap: var(--e4); }
+  /* no toque: título, trecho e acesso visíveis, sem depender do hover */
+  .texto, .texto.simples { height: auto; }
+  .texto a { position: static; display: flex; flex-direction: column-reverse; }
+  .texto .rosto, .texto.simples .rosto { position: relative; height: auto; transform: none !important; }
+  .texto .verso { position: static; height: auto; margin: 0 6px; border-top: 0; padding: 12px 14px 14px; }
+  .texto .ler { margin-top: 14px; }
+  .caneta { right: 18px; top: 14px; width: 20px; height: 104px; transform: rotate(62deg); transform-origin: 50% 50%; }
+  .caneta:hover, .caneta:focus-visible { transform: rotate(56deg); }
+  .caneta[aria-pressed="true"] { transform: rotate(30deg) translate(0, 6px); }
+  .caneta-dica { right: 16px; top: 76px; font-size: 13px; width: 200px; }
+
+  .galeria .linha { flex-direction: column; gap: clamp(14px, 4vw, 28px); }
+  .galeria .linha.grande.retrato figure, .galeria figure { width: 100% !important; }
+  .galeria .linha.par figure:nth-child(2) { margin-top: 0; }
+  .lightbox .palco { padding: 0 8px; }
+  .lightbox .seta { top: auto; bottom: 12px; transform: none; }
+
+  .projeto .topo { grid-template-columns: 1fr; gap: var(--e4); }
+  .projeto summary { margin-left: 0; }
+  .galeria-projeto { grid-template-columns: 1fr; }
+  .carrossel img, .carrossel video { height: 62vw; max-height: 420px; }
+  .carrossel-ctrl { display: none; }
+  .mosaico { height: 74vw; max-height: 380px; }
+
+  .sobre { grid-template-columns: 1fr; gap: var(--e5); }
+  .licenca-grande { position: relative; top: auto; width: 230px; }
+  .sobre .corpo p { font-size: 18px; }
+  .rodape { padding: 0 16px; }
+}
+
+/* =====================================================================
+   v3 — ajustes a partir dos prints (substituem regras anteriores)
+   ===================================================================== */
+
+/* ---------- Argolas: furos e arco no mesmo desenho (sempre alinhados) ---------- */
+:root {
+  /* dois furos (x=10 e x=54, y=22) + arco que nasce e termina no centro deles */
+  --argola-dupla: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='30' viewBox='0 0 64 30'><defs><linearGradient id='m' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23ffffff'/><stop offset='.35' stop-color='%23d4d6d8'/><stop offset='.62' stop-color='%23858a8f'/><stop offset='1' stop-color='%23b4b7ba'/></linearGradient><radialGradient id='h' cx='.45' cy='.4' r='.6'><stop offset='0' stop-color='%23a99c8a'/><stop offset='1' stop-color='%23675b4d'/></radialGradient><filter id='b' x='-30%' y='-60%' width='160%' height='220%'><feGaussianBlur stdDeviation='1.4'/></filter></defs><circle cx='10' cy='22' r='5.2' fill='url(%23h)'/><circle cx='54' cy='22' r='5.2' fill='url(%23h)'/><path d='M12 25 C 13 9, 53 9, 56 25' fill='none' stroke='rgba(50,30,10,.3)' stroke-width='4' stroke-linecap='round' filter='url(%23b)'/><path d='M10 22 C 11 4, 53 4, 54 22' fill='none' stroke='url(%23m)' stroke-width='4.4' stroke-linecap='round'/><path d='M15 13 C 22 7.5, 42 7.5, 49 13' fill='none' stroke='rgba(255,255,255,.8)' stroke-width='1' stroke-linecap='round'/></svg>");
+  /* página interna: um furo (x=54) e o arco dando a volta pela borda */
+  --argola-borda: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='30' viewBox='0 0 64 30'><defs><linearGradient id='m' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23ffffff'/><stop offset='.35' stop-color='%23d4d6d8'/><stop offset='.62' stop-color='%23858a8f'/><stop offset='1' stop-color='%23b4b7ba'/></linearGradient><radialGradient id='h' cx='.45' cy='.4' r='.6'><stop offset='0' stop-color='%23a99c8a'/><stop offset='1' stop-color='%23675b4d'/></radialGradient><filter id='b' x='-30%' y='-60%' width='160%' height='220%'><feGaussianBlur stdDeviation='1.4'/></filter></defs><circle cx='54' cy='22' r='5.2' fill='url(%23h)'/><path d='M14 25 C 15 9, 53 9, 56 25' fill='none' stroke='rgba(50,30,10,.3)' stroke-width='4' stroke-linecap='round' filter='url(%23b)'/><path d='M10 24 C 11 4, 53 4, 54 22' fill='none' stroke='url(%23m)' stroke-width='4.4' stroke-linecap='round'/><path d='M15 13 C 22 7.5, 42 7.5, 49 13' fill='none' stroke='rgba(255,255,255,.8)' stroke-width='1' stroke-linecap='round'/></svg>");
+}
+.furo { display: none; }
+.abertura { position: relative; }
+.interna > .folha { position: relative; }
+.argolas { position: absolute; inset: 0; z-index: 6; pointer-events: none; }
+.argolas .argola {
+  position: absolute; top: var(--y); left: 50%;
+  width: 64px; height: 30px; margin: -22px 0 0 -32px;   /* centro dos furos exatamente no vão ±22px */
+  background: var(--argola-dupla) no-repeat 0 0 / 64px 30px;
+}
+.argolas.borda .argola { left: -24px; margin-left: 0; background-image: var(--argola-borda); } /* furo a 30px da borda */
+
+/* ---------- Foto de infância: quadro com enquadramento ajustável ---------- */
+.foto-principal .quadro { position: relative; overflow: hidden; height: calc(clamp(170px, 31vh, 320px) * var(--tam, 1)); aspect-ratio: 1740 / 1080; max-width: 100%; }
+.foto-principal .quadro img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- Aba "Sobre mim": só a ponta da folha sobe ---------- */
+.clipe-sobre {
+  background: none; border: 0; box-shadow: none; padding: 0; width: 116px;
+  transform: rotate(7deg); transition: none;
+}
+.clipe-sobre:hover, .clipe-sobre:focus-visible { transform: rotate(7deg); }
+.clipe-sobre .folha-sobre {
+  display: block; padding: 10px 14px 24px;
+  background: var(--papel) var(--textura); border: 1px solid var(--linha);
+  box-shadow: 0 8px 18px -12px rgba(40,25,10,.45);
+  transform-origin: 10% 100%;
+  transition: transform .35s var(--ease);
+}
+.clipe-sobre:hover .folha-sobre, .clipe-sobre:focus-visible .folha-sobre { transform: rotate(-4deg) translateY(-3px); }
+.clipe-sobre:focus-visible { outline: none; }
+.clipe-sobre:focus-visible .folha-sobre { outline: 2px solid var(--rosa); outline-offset: 2px; }
+
+/* ---------- Pastas: materiais de volta ---------- */
+.folhinha { padding: 10% 9%; }
+.folhinha::before { inset: 52% 12% 10%; }
+.folhinha b { position: relative; display: block; font: 400 clamp(11px, 1.55vh, 14px)/1.15 var(--serifa); color: var(--tinta); }
+.pasta--fotos .dentro { inset: -14% 6% 26% 6%; }
+.mini-foto.m1 { left: 0; top: 22%; width: 44%; height: auto; aspect-ratio: 3/2; --r: -9deg; }
+.mini-foto.m3 { right: 0; top: 18%; width: 44%; height: auto; aspect-ratio: 3/2; --r: 8deg; }
+.mini-foto.m2 { left: 31%; top: -6%; width: 34%; height: auto; aspect-ratio: 2/3; --r: 1deg; z-index: 2; } /* fachada vertical: a base fica atrás da frente da pasta */
+
+/* ---------- Textos ---------- */
+.frente-textos h2 span { display: block; }
+.assinatura { font: italic 400 17px/1.4 var(--serifa); color: var(--tinta-2); }
+.frente-textos > header p + p { margin-top: 10px; }
+
+/* Caneta rosa apoiada na margem esquerda */
+.porta-caneta { position: absolute; left: -40px; top: 330px; width: 34px; height: 170px; pointer-events: none; }
+.caneta {
+  position: absolute; z-index: 8; left: -34px; top: 330px; right: auto;
+  width: 24px; height: 150px; padding: 0; border: 0; background: none; cursor: grab;
+  transform: rotate(-6deg); transform-origin: 50% 50%;
+  transition: transform .3s var(--ease);
+}
+.caneta svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(3px 5px 3px rgba(40,25,10,.28)); }
+.caneta:hover, .caneta:focus-visible { transform: rotate(-2deg) translateY(-6px); }
+.caneta.na-mao {
+  position: fixed; z-index: 60; pointer-events: none; cursor: none;
+  transform: rotate(28deg); transform-origin: 12px 148px; transition: none;
+}
+.devolver-caneta {
+  position: fixed; z-index: 61; left: 16px; bottom: 16px;
+  padding: 12px 16px; min-height: 44px; border: 1px solid var(--rosa-fb); border-radius: 8px;
+  background: var(--papel); color: var(--tinta); font: 500 14px/1 var(--mono); cursor: pointer;
+  box-shadow: 0 10px 22px -12px rgba(40,25,10,.5);
+}
+.devolver-caneta:hover, .devolver-caneta:focus-visible { background: #fde7f1; }
+.rabisco { position: absolute; inset: 0; z-index: 7; pointer-events: none; }
+.caneta-ativa .rabisco { pointer-events: auto; cursor: none; touch-action: none; }
+
+/* ---------- Trabalhos ---------- */
+.carrossel button { position: relative; }
+.play {
+  position: absolute; left: 50%; top: 50%; width: 52px; height: 52px; margin: -26px 0 0 -26px;
+  border-radius: 50%; background: rgba(251, 248, 242, .88); box-shadow: 0 6px 16px -6px rgba(0,0,0,.45);
+}
+.play::after { content: ""; position: absolute; left: 21px; top: 16px; border-style: solid; border-width: 10px 0 10px 16px; border-color: transparent transparent transparent var(--tinta); }
+.carrossel button:hover .play, .carrossel button:focus-visible .play { background: #fff; }
+.abrir-projeto {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: var(--e3);
+  font: 500 13px/1 var(--mono); color: var(--tinta-2); cursor: pointer;
+  padding: 12px 14px; min-height: 44px; border: 1px solid var(--linha); border-radius: 6px; background: var(--papel-2);
+}
+.abrir-projeto::before { content: "+"; font-size: 15px; }
+.abrir-projeto[aria-expanded="true"]::before { content: "−"; }
+.abrir-projeto:hover, .abrir-projeto:focus-visible { color: var(--tinta); border-color: var(--tinta-3); }
+.projeto .aberto { margin-top: var(--e6); }
+.projeto .capa { overflow: hidden; }
+
+/* ---------- Sobre: carteirinha rosa e coluna de texto mais larga ---------- */
+.sobre { grid-template-columns: minmax(0, 270px) minmax(0, 1fr); gap: var(--e7) clamp(32px, 5vw, 72px); }
+.licenca-grande { background: #f9d3e4; border-color: rgba(200, 80, 140, .3); box-shadow: inset 0 0 0 5px rgba(255,255,255,.6), 0 18px 30px -18px rgba(120,40,80,.45); }
+.licenca-grande .tipo { color: #b0407c; }
+.sobre .corpo p { max-width: 60ch; font-size: 19px; }
+
+/* ---------- Fotografia: Canon Prima ao lado do título ---------- */
+.cabeca-foto { align-items: center; }
+.camera-area { position: relative; flex: none; padding-left: 96px; /* espaço da pontinha do filme */ }
+.camera {
+  position: relative; display: block; width: clamp(150px, 16vw, 210px); padding: 0; border: 0; background: none; cursor: pointer;
+  transform: rotate(-3deg);
+}
+.camera img { position: relative; z-index: 2; width: 100%; height: auto; filter: drop-shadow(6px 10px 8px rgba(40,25,10,.28)) drop-shadow(1px 2px 1px rgba(40,25,10,.2)); }
+.camera:focus-visible { outline: 2px solid var(--rosa); outline-offset: 6px; border-radius: 8px; }
+.filme {
+  position: absolute; z-index: 1; top: 34%; right: calc(100% - 46px); width: 132px; height: 34%;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 6px, rgba(255,245,230,.92) 6px 10px, transparent 10px 14px) top 3px left 0 / 100% 5px no-repeat,
+    repeating-linear-gradient(90deg, transparent 0 6px, rgba(255,245,230,.92) 6px 10px, transparent 10px 14px) bottom 3px left 0 / 100% 5px no-repeat,
+    linear-gradient(180deg, #5a2f14, #7c4420 50%, #5a2f14);
+  border-radius: 2px 0 0 2px;
+  box-shadow: 0 4px 8px -4px rgba(40,25,10,.5);
+  transform: translateX(100%);
+  transition: transform .55s var(--ease);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 6px 50%);
+}
+.camera[aria-pressed="true"] .filme { transform: translateX(0); }
+.flash {
+  position: absolute; z-index: 3; left: 86%; top: 14%; width: 0; height: 0; pointer-events: none;
+}
+.flash::before, .flash::after { content: ""; position: absolute; left: 0; top: 0; opacity: 0; }
+.flash::before { /* estrela de raios */
+  width: 180px; height: 180px; margin: -90px 0 0 -90px;
+  background:
+    linear-gradient(90deg, transparent 0 49.3%, #fff 49.3% 50.7%, transparent 50.7%) center / 100% 100%,
+    linear-gradient(0deg, transparent 0 49.3%, #fff 49.3% 50.7%, transparent 50.7%) center / 100% 100%,
+    linear-gradient(45deg, transparent 0 49.6%, rgba(255,255,255,.8) 49.6% 50.4%, transparent 50.4%) center / 70% 70% no-repeat,
+    linear-gradient(-45deg, transparent 0 49.6%, rgba(255,255,255,.8) 49.6% 50.4%, transparent 50.4%) center / 70% 70% no-repeat;
+  -webkit-mask: radial-gradient(circle, #000 0 12%, rgba(0,0,0,.6) 30%, transparent 62%);
+          mask: radial-gradient(circle, #000 0 12%, rgba(0,0,0,.6) 30%, transparent 62%);
+  filter: drop-shadow(0 0 3px #fff) drop-shadow(0 0 6px rgba(255, 214, 160, .9));
+}
+.flash::after { /* núcleo de luz */
+  width: 90px; height: 90px; margin: -45px 0 0 -45px; border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 18%, rgba(255,250,235,.85) 32%, rgba(255,226,180,.35) 55%, transparent 72%);
+}
+.camera.disparou .flash::before { animation: flash-raios .5s ease-out forwards; }
+.camera.disparou .flash::after { animation: flash-nucleo .5s ease-out forwards; }
+@keyframes flash-raios { 0% { opacity: 0; transform: scale(.2) rotate(-8deg); } 18% { opacity: 1; transform: scale(1.05) rotate(0deg); } 100% { opacity: 0; transform: scale(.85) rotate(4deg); } }
+@keyframes flash-nucleo { 0% { opacity: 0; transform: scale(.3); } 15% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0; transform: scale(.9); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .camera.disparou .flash::after { animation: flash-nucleo .25s linear forwards !important; }
+  .filme { transition: none; }
+}
+
+@media (min-width: 901px) and (max-height: 720px) {
+  .clipe-sobre .folha-sobre { padding-bottom: 18px; }
+}
+
+@media (max-width: 900px) {
+  .argolas { display: none; }
+  .foto-principal .quadro { height: auto; width: 100%; aspect-ratio: 16 / 10; }
+  .clipe-sobre { width: 84px; }
+  .clipe-sobre .folha-sobre { padding: 6px 8px 12px; font-size: 13px; }
+  .porta-caneta { display: none; }
+  .caneta { left: -4px; top: 150px; width: 18px; height: 112px; transform: rotate(-4deg); }
+  .caneta:hover, .caneta:focus-visible { transform: rotate(-4deg); }
+  .caneta.na-mao { width: 24px; height: 150px; transform: rotate(28deg); }
+  .cabeca-foto { align-items: flex-end; }
+  .camera-area { padding-left: 84px; margin-left: auto; }
+  .camera { width: 150px; }
+  .filme { width: 110px; }
+  .sobre { grid-template-columns: 1fr; }
+  .licenca-grande { width: 230px; }
+}
+
+/* reserva o espaço da capa antes de carregar */
+.carrossel img { aspect-ratio: auto 4 / 5; }
+.projeto .capa img { aspect-ratio: auto 4 / 3; }
+.projeto .capa.retrato img { aspect-ratio: auto 4 / 5; }
+
+/* flash mais legível sobre o papel claro */
+.flash::before {
+  width: 230px; height: 230px; margin: -115px 0 0 -115px;
+  background:
+    linear-gradient(90deg, transparent 0 48.9%, #fff 48.9% 51.1%, transparent 51.1%) center / 100% 100%,
+    linear-gradient(0deg, transparent 0 48.9%, #fff 48.9% 51.1%, transparent 51.1%) center / 100% 100%,
+    linear-gradient(45deg, transparent 0 49.3%, #fff 49.3% 50.7%, transparent 50.7%) center / 72% 72% no-repeat,
+    linear-gradient(-45deg, transparent 0 49.3%, #fff 49.3% 50.7%, transparent 50.7%) center / 72% 72% no-repeat;
+  filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 5px rgba(255, 196, 120, 1)) drop-shadow(0 0 10px rgba(255, 170, 90, .7));
+}
+.flash::after {
+  width: 120px; height: 120px; margin: -60px 0 0 -60px;
+  background: radial-gradient(circle, #fff 0 16%, rgba(255,248,225,.95) 28%, rgba(255,214,150,.55) 48%, rgba(255,200,130,.18) 64%, transparent 74%);
+}
+
+/* =====================================================================
+   v4
+   ===================================================================== */
+
+/* Pasta de fotos e currículo: tudo o que está "dentro" fica atrás da frente.
+   O recorte corta exatamente na abertura (topo da frente), em repouso e no hover. */
+.pasta--fotos .dentro { clip-path: inset(-60% -30% 50% -30%); }          /* dentro: -14%..74% da pasta; frente começa em 30% */
+.pasta--cv .dentro { clip-path: inset(-60% -30% 58.5% -30%); }           /* dentro: -4%..78%; frente em 30% */
+.pasta--textos .dentro, .pasta--trabalhos .dentro { clip-path: inset(-60% -30% 58.5% -30%); }
+
+/* Aba "Sobre mim": folha e clipe são uma peça só e se movem juntos */
+.clipe-sobre .folha-sobre { position: relative; }
+.clipe-sobre .folha-sobre svg { position: absolute; left: 18px; bottom: -30px; width: 20px; height: 48px; }
+.clipe-sobre:hover .folha-sobre, .clipe-sobre:focus-visible .folha-sobre { transform: rotate(-2deg) translateY(-3px); }
+
+/* Textos: arte da Fake Blonde em destaque */
+.frente-textos.fb > header { grid-template-columns: minmax(0, 380px) 1fr; gap: var(--e6) var(--e7); align-items: center; }
+.arte-fb { margin: 0; }
+.arte-fb img { width: 100%; height: auto; border-radius: 3px; box-shadow: 0 14px 26px -18px rgba(120, 40, 80, .55); }
+
+/* Caneta maior, sempre na margem */
+.caneta { width: 30px; height: 188px; }
+.caneta.na-margem { position: fixed; z-index: 30; }
+.caneta.na-mao { width: 30px; height: 188px; transform-origin: 15px 185px; }
+
+/* Trabalhos: carrossel indica quantas páginas tem */
+.paginas {
+  position: absolute; right: 10px; top: 10px; padding: 4px 8px; border-radius: 999px;
+  background: rgba(43, 38, 34, .72); color: #fbf8f2; font: 600 11px/1 var(--mono); letter-spacing: .04em;
+}
+.lightbox [data-contador] { font-weight: 600; }
+
+/* Sobre: tamanho da carteirinha ajustável; contatos em 2 × 2 com ícones rosa */
+.sobre { grid-template-columns: minmax(0, calc(270px * var(--tam, 1))) minmax(0, 1fr); }
+.contatos { display: grid; grid-template-columns: repeat(2, max-content); gap: 10px 14px; }
+.contatos svg { color: #e0709f; }
+@media (max-width: 900px) {
+  .frente-textos.fb > header { grid-template-columns: 1fr; }
+  .arte-fb { max-width: 420px; }
+  .caneta, .caneta.na-margem { width: 24px; height: 150px; }
+  .sobre { grid-template-columns: 1fr; }
+  .licenca-grande { width: calc(230px * var(--tam, 1)); }
+  .contatos { grid-template-columns: 1fr; }
+}
+.frente-textos h2.arte-fb { display: block; font-size: 0; }
+.frente-textos h2.arte-fb img { width: 100%; height: auto; }
+
+/* =====================================================================
+   v5 — imagens editáveis e ajustes de Trabalhos
+   ===================================================================== */
+/* Pasta Fotografia: foto vertical com tamanho, proporção e altura ajustáveis (base sempre atrás da frente) */
+.mini-foto { overflow: hidden; }
+.mini-foto.m2 {
+  width: calc(34% * var(--tam, 1)); aspect-ratio: 1 / var(--prop, 1.5);
+  left: calc(48% - 17% * var(--tam, 1)); top: calc(-6% - var(--acima, 0) * 1%);
+}
+/* Pasta Trabalhos: cada imagem com tamanho próprio */
+.capinha { overflow: hidden; width: calc(56% * var(--tam, 1)); }
+.capinha img { display: block; }
+/* Capa dos posts em Textos: altura ajustável */
+.texto[data-tamanho] { height: calc(182px + 128px * var(--tam, 1) + var(--sobe)); }
+.texto[data-tamanho] .rosto { height: calc(182px + 128px * var(--tam, 1)); }
+.texto[data-tamanho] .capa-post { height: calc(128px * var(--tam, 1)); }
+/* Vitrine: capas de vídeo no formato do feed (4:5), tamanho igual entre elas */
+.quadro-peca { display: block; overflow: hidden; }
+.carrossel li.peca-video img { aspect-ratio: 4 / 5; width: auto; object-fit: cover; }
+/* Trabalhos: botão logo abaixo do título */
+.projeto .topo .abrir-projeto { margin: 0 0 var(--e4); }
+@media (max-width: 900px) {
+  .texto[data-tamanho], .texto[data-tamanho] .rosto { height: auto; }
+}

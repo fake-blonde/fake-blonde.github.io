@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Textos · Beatriz Chianello</title>
+  <meta name="description" content="Textos autorais de Beatriz Chianello na newsletter Fake Blonde Loves You.">
+  <link rel="icon" href="assets/img/marca/fake-blonde-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/estilo.css">
+</head>
+<body data-pagina="textos">
+  <div class="fichario interna">
+    <nav aria-label="Divisórias">
+      <ul class="divisorias">
+        <li><a href="index.html">Índice</a></li>
+        <li><a href="textos.html" aria-current="page">Textos</a></li>
+        <li><a href="fotografia.html">Fotografia</a></li>
+        <li><a href="trabalhos.html">Trabalhos</a></li>
+        <li><a href="sobre.html">Sobre</a></li>
+      </ul>
+    </nav>
+    <main class="folha" data-aviso>
+      <div class="argolas borda" aria-hidden="true"><span class="argola" style="--y:90px"></span><span class="argola" style="--y:170px"></span><span class="argola" style="--y:250px"></span><span class="argola" style="--y:510px"></span><span class="argola" style="--y:590px"></span><span class="argola" style="--y:670px"></span></div>
+      <a class="voltar" href="index.html">← Índice</a>
+      <div class="porta-caneta" aria-hidden="true"></div>
+      <button type="button" class="caneta" aria-pressed="false" aria-label="Pegar a caneta para rabiscar nesta folha"><svg viewBox="0 0 24 150" aria-hidden="true"><defs><linearGradient id="cr" x1="0" x2="1"><stop offset="0" stop-color="#f7b7cf"/><stop offset=".45" stop-color="#f4a6c3"/><stop offset="1" stop-color="#d9789f"/></linearGradient><linearGradient id="cm" x1="0" x2="1"><stop offset="0" stop-color="#f2f2f0"/><stop offset=".5" stop-color="#c9cbcd"/><stop offset="1" stop-color="#9ea1a5"/></linearGradient></defs><rect x="5" y="2" width="14" height="12" rx="6" fill="#e98fb2"/><rect x="4" y="10" width="16" height="96" rx="4" fill="url(#cr)"/><path d="M16 14 h4 v44 a2 2 0 0 1 -4 0 z" fill="url(#cm)"/><rect x="4" y="104" width="16" height="8" fill="url(#cm)"/><path d="M4.5 112 L19.5 112 L13.2 143 Q12 147 10.8 143 Z" fill="url(#cr)"/><path d="M10.8 140 L13.2 140 L12 148.5 Z" fill="#9a9da1"/><rect x="7" y="16" width="2.5" height="84" rx="1.2" fill="rgba(255,255,255,.5)"/></svg></button>
+      <button type="button" class="devolver-caneta" hidden>Devolver a caneta</button>
+      <canvas class="rabisco" aria-hidden="true"></canvas>
+      <header class="cabeca">
+        <div>
+          <h1>Textos</h1>
+          <p class="sub" data-editavel="textos.sub">Escrevo sobre as coisas que ficam comigo: fotografias, lembranças e pequenos detalhes do cotidiano.</p>
+        </div>
+        <a class="atalho" href="outros-textos.html">Outros textos →</a>
+      </header>
+      <div id="autorais"></div>
+    </main>
+  </div>
+  <p class="rodape">Beatriz Chianello · <a href="assets/docs/Curriculo-Beatriz-Chianello.pdf" download="Curriculo-Beatriz-Chianello.pdf">Baixar currículo (PDF)</a> · <a href="assets/docs/Curriculo-Beatriz-Chianello.pdf" target="_blank" rel="noopener">abrir no navegador</a></p>
+  
+  <script src="assets/js/conteudo.js"></script>
+  <script src="assets/js/ajustes.js"></script>
+  <script src="assets/js/paginas.js"></script>
+  <script>
+    if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) {
+      fetch("/__editor/ping").then(function (r) { if (r.ok) { var s = document.createElement("script"); s.src = "/__editor/editor.js"; document.body.appendChild(s); } }).catch(function () {});
+    }
+  </script>
+  <script src="assets/js/caneta.js"></script>
+</body>
+</html>

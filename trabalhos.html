@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trabalhos · Beatriz Chianello</title>
+  <meta name="description" content="Trabalhos de social media, conteúdo e direção de arte de Beatriz Chianello.">
+  <link rel="icon" href="assets/img/marca/fake-blonde-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/estilo.css">
+</head>
+<body data-pagina="trabalhos">
+  <div class="fichario interna">
+    <nav aria-label="Divisórias">
+      <ul class="divisorias">
+        <li><a href="index.html">Índice</a></li>
+        <li><a href="textos.html">Textos</a></li>
+        <li><a href="fotografia.html">Fotografia</a></li>
+        <li><a href="trabalhos.html" aria-current="page">Trabalhos</a></li>
+        <li><a href="sobre.html">Sobre</a></li>
+      </ul>
+    </nav>
+    <main class="folha" data-aviso>
+      <div class="argolas borda" aria-hidden="true"><span class="argola" style="--y:90px"></span><span class="argola" style="--y:170px"></span><span class="argola" style="--y:250px"></span><span class="argola" style="--y:510px"></span><span class="argola" style="--y:590px"></span><span class="argola" style="--y:670px"></span></div>
+      <a class="voltar" href="index.html">← Índice</a>
+      <header class="cabeca">
+        <div>
+          <h1>Trabalhos</h1>
+          <p class="sub">Social media, conteúdo e direção de arte. O acervo completo entra aos poucos.</p>
+        </div>
+      </header>
+      <div class="projetos" id="projetos"></div>
+    </main>
+  </div>
+  <p class="rodape">Beatriz Chianello · <a href="assets/docs/Curriculo-Beatriz-Chianello.pdf" download="Curriculo-Beatriz-Chianello.pdf">Baixar currículo (PDF)</a> · <a href="assets/docs/Curriculo-Beatriz-Chianello.pdf" target="_blank" rel="noopener">abrir no navegador</a></p>
+  <dialog class="lightbox" id="lightbox" aria-label="Imagem ampliada">
+    <div class="barra"><span data-contador></span><button type="button" class="fechar">Fechar ✕</button></div>
+    <div class="palco"></div>
+    <p class="legenda"></p>
+    <button type="button" class="seta ant" aria-label="Anterior">←</button>
+    <button type="button" class="seta prox" aria-label="Próxima">→</button>
+  </dialog>
+  <script src="assets/js/conteudo.js"></script>
+  <script src="assets/js/ajustes.js"></script>
+  <script src="assets/js/paginas.js"></script>
+  <script>
+    if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) {
+      fetch("/__editor/ping").then(function (r) { if (r.ok) { var s = document.createElement("script"); s.src = "/__editor/editor.js"; document.body.appendChild(s); } }).catch(function () {});
+    }
+  </script>
+</body>
+</html>
