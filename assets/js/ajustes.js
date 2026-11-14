@@ -1,12 +1,14 @@
 /* Ajustes salvos pela prévia editável (python ferramentas/servidor_edicao.py).
    Entram na versão publicada e prevalecem sobre os padrões de conteudo.js. */
-window.AJUSTES_VERSAO = "recuperado-2026-11-13";
+window.AJUSTES_VERSAO = "1794615004613";
 window.AJUSTES = {
   "textos": {
     "fotografia.sub": "Um rolo de cada vez."
   },
   "enquadrar": {},
-  "capas": {},
+  "capas": {
+    "indice.pasta-trabalhos.1": "assets/img/trabalhos/ollie-capa.jpg"
+  },
   "ordem": {
     "fotos": [
       "foto-11",

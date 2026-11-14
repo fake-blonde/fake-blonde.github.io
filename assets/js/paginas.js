@@ -229,7 +229,7 @@
     const social = (t) => `
       <article class="projeto social" id="${t.id}">
         <div class="topo">
-          <div class="mosaico" aria-hidden="true">${t.mosaico.map((s) => `<img src="${esc(s)}" alt="">`).join("")}</div>
+          <div class="mosaico pilha" role="group" aria-label="Capas em destaque: toque para girar">${t.mosaico.map((s, i) => `<button type="button" class="pilha-item" data-pos="${[0, 1, 2][i]}" aria-label="Capa ${i + 1}"><img src="${esc(s)}" alt="" data-capa="${esc(s)}" data-capa-chave="trabalhos.pilha.${i + 1}" data-enquadrar="trabalhos.pilha.${i + 1}"></button>`).join("")}</div>
           <div>
             <p class="papel">${esc(t.papel)}${carimbo(t)}</p>
             <h2>${esc(t.titulo)}</h2>
@@ -263,15 +263,18 @@
           </div>
           <div>
             <p class="papel">${esc(t.papel)}${carimbo(t)}</p>
-            <h2>${esc(t.titulo)}</h2>
-            ${!t.emBreve && t.texto && t.texto.length ? `<button type="button" class="abrir-projeto" aria-expanded="false" aria-controls="aberto-${t.id}">Ler sobre o projeto</button>` : ""}
+            <div class="titulo-linha">
+              <h2>${esc(t.titulo)}</h2>
+              ${!t.emBreve && t.texto && t.texto.length ? `<button type="button" class="abrir-projeto" aria-expanded="false" aria-controls="aberto-${t.id}" aria-label="Abrir o projeto ${esc(t.titulo)}">+</button>` : ""}
+            </div>
             <p class="resumo">${esc(t.resumo)}</p>
+            ${!t.emBreve && t.texto && t.texto.length
+              ? `<div class="aberto" id="aberto-${t.id}" hidden>${t.texto.map((p) => `<p>${esc(p)}</p>`).join("")}</div>`
+              : ""}
             ${links.length ? `<ul class="links">${links.map((l) => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.rotulo)} ↗</a></li>`).join("")}</ul>` : ""}
           </div>
         </div>
-        ${!t.emBreve && t.texto && t.texto.length
-          ? `<div class="aberto" id="aberto-${t.id}" hidden>${t.texto.map((p) => `<p>${esc(p)}</p>`).join("")}${t.galeria && t.galeria.length ? `<div class="galeria-projeto">${t.galeria.map((s, i) => `<figure style="margin:0" class="${i === 0 ? "destaque" : ""}"><img src="${esc(s)}" alt="" loading="lazy"></figure>`).join("")}</div>` : ""}</div>`
-          : ""}
+        ${t.galeria && t.galeria.length ? `<div class="galeria-projeto" id="galeria-${t.id}">${t.galeria.map((s, i) => `<figure style="margin:0" class="${i === 0 ? "destaque" : ""}"><img src="${esc(s)}" alt="" loading="lazy"></figure>`).join("")}</div>` : ""}
       </article>`;
     };
 
@@ -317,12 +320,32 @@
       });
     });
 
+    // pilha de capas: lateral vem para a frente; a da frente faz a pilha avançar
+    document.querySelectorAll(".pilha").forEach((pilha) => {
+      pilha.addEventListener("click", (e) => {
+        const item = e.target.closest(".pilha-item");
+        if (!item || document.body.classList.contains("ed-ativo")) return;
+        const itens = [...pilha.querySelectorAll(".pilha-item")];
+        const frente = itens.find((x) => x.dataset.pos === "1");
+        if (item === frente) {
+          // avança: a da direita vem para a frente, a da frente vai para a esquerda, a da esquerda para a direita
+          const prox = { 0: "2", 1: "0", 2: "1" };
+          itens.forEach((x) => { x.dataset.pos = prox[x.dataset.pos]; });
+        } else {
+          const p = item.dataset.pos;
+          item.dataset.pos = "1";
+          frente.dataset.pos = p;
+        }
+      });
+    });
+
     document.querySelectorAll(".abrir-projeto").forEach((b) => {
       b.addEventListener("click", () => {
         const alvo = document.getElementById(b.getAttribute("aria-controls"));
         const abrir = b.getAttribute("aria-expanded") !== "true";
         b.setAttribute("aria-expanded", String(abrir));
-        b.textContent = abrir ? "Fechar o projeto" : "Ler sobre o projeto";
+        b.textContent = abrir ? "−" : "+";
+        b.setAttribute("aria-label", (abrir ? "Fechar" : "Abrir") + b.getAttribute("aria-label").replace(/^(Abrir|Fechar)/, ""));
         alvo.hidden = !abrir;
       });
     });
