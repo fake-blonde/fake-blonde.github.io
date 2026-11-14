@@ -178,28 +178,42 @@
       const fotos = ordena(P.fotografia.fotos.filter(vis), "fotos", (f) => f.arquivo);
       return Promise.all(fotos.map(medir)).then((l) => {
         lista = l;
+        // Composição: AJ().galeria[id] = { junto: true (fica ao lado da próxima), larg: % quando sozinha, peso: espaço no par }
+        const comp = window.composicaoGaleria = (window.composicaoGaleria0 = () => {
+          const salvo = AJ().galeria || {};
+          if (Object.keys(salvo).length) return salvo;
+          // padrão: alterna uma grande e um par
+          const c = {}; let grande = true;
+          for (let i = 0; i < lista.length; i++) {
+            if (!grande && i < lista.length - 1) { c[lista[i].arquivo] = { junto: true }; i++; }
+            grande = !grande;
+          }
+          return c;
+        })();
         const linhas = [];
-        let i = 0, grande = true;
-        while (i < lista.length) {
-          if (grande || i === lista.length - 1) { linhas.push([i]); i += 1; }
-          else { linhas.push([i, i + 1]); i += 2; }
-          grande = !grande;
+        for (let i = 0; i < lista.length; i++) {
+          const g = comp[lista[i].arquivo] || {};
+          if (g.junto && i < lista.length - 1) { linhas.push([i, i + 1]); i++; }
+          else linhas.push([i]);
         }
         const fig = (idx, flex) => {
           const f = lista[idx];
           const leg = legenda(f);
-          return `<figure style="${flex ? `flex:${(f.w / f.h).toFixed(3)} 1 0` : ""}" data-foto="${f.arquivo}">
+          const g = comp[f.arquivo] || {};
+          const estilo = flex ? `flex:${((f.w / f.h) * (g.peso || 1)).toFixed(3)} 1 0` : (g.larg ? `width:${g.larg}%` : "");
+          return `<figure style="${estilo}" data-foto="${f.arquivo}">
             <button type="button" data-i="${idx}" aria-label="Ampliar foto ${idx + 1} de ${lista.length}">
-              <img src="${src(f, true)}" width="${f.w}" height="${f.h}" loading="${idx < 3 ? "eager" : "lazy"}" alt="Fotografia analógica ${idx + 1}${leg ? ", " + esc(leg) : ""}">
+              <span class="quadro-foto"><img src="${src(f, true)}" width="${f.w}" height="${f.h}" loading="${idx < 3 ? "eager" : "lazy"}" data-enquadrar="foto.${f.arquivo}" alt="Fotografia analógica ${idx + 1}${leg ? ", " + esc(leg) : ""}"></span>
             </button>
             ${leg ? `<figcaption>${esc(leg)}</figcaption>` : ""}
           </figure>`;
         };
         gal.innerHTML = linhas
           .map((l) => (l.length === 1
-            ? `<div class="linha grande ${lista[l[0]].w >= lista[l[0]].h ? "paisagem" : "retrato"}">${fig(l[0], false)}</div>`
+            ? `<div class="linha grande ${lista[l[0]].w >= lista[l[0]].h ? "paisagem" : "retrato"}${(comp[lista[l[0]].arquivo] || {}).larg ? " com-largura" : ""}">${fig(l[0], false)}</div>`
             : `<div class="linha par">${fig(l[0], true)}${fig(l[1], true)}</div>`))
           .join("");
+        if (window.aplicarAjustesDOM) window.aplicarAjustesDOM();
       });
     };
     window.renderFotografia();
@@ -213,6 +227,18 @@
 
   /* ---------- Trabalhos ---------- */
   // peças do case, com as mudanças da prévia (AJ.midias substitui a lista inteira do case)
+  // ordem dos blocos de clientes (índices originais); a chave de cada cliente (case:N) não muda
+  const ordemClientes = window.ordemClientes = (n) => {
+    const o = (AJ().ordem && AJ().ordem.clientes) || [];
+    const base = Array.from({ length: n }, (_, i) => i);
+    return o.filter((i) => base.includes(i)).concat(base.filter((i) => !o.includes(i)));
+  };
+  window.reordenarClientes = () => {
+    const secoes = [...document.querySelectorAll(".case[data-case]")];
+    if (!secoes.length) return;
+    const pai = secoes[0].parentElement;
+    ordemClientes(secoes.length).forEach((ci) => pai.appendChild(document.querySelector(`.case[data-case="${ci}"]`)));
+  };
   window.pecasDoCase = (ci) => {
     const soc = P.trabalhos.find((t) => t.cases);
     const m = AJ().midias && AJ().midias[`case:${ci}`];
@@ -229,14 +255,14 @@
     const social = (t) => `
       <article class="projeto social" id="${t.id}">
         <div class="topo">
-          <div class="mosaico pilha" role="group" aria-label="Capas em destaque: toque para girar">${t.mosaico.map((s, i) => `<button type="button" class="pilha-item" data-pos="${[0, 1, 2][i]}" aria-label="Capa ${i + 1}"><img src="${esc(s)}" alt="" data-capa="${esc(s)}" data-capa-chave="trabalhos.pilha.${i + 1}" data-enquadrar="trabalhos.pilha.${i + 1}"></button>`).join("")}</div>
+          <div class="mosaico pilha" role="group" aria-label="Capas em destaque: toque para girar">${t.mosaico.map((s, i) => `<button type="button" class="pilha-item" data-pos="${[0, 1, 2][i]}" aria-label="Capa ${i + 1}"><span class="pilha-foto"><img src="${esc(s)}" alt="" data-capa="${esc(s)}" data-capa-chave="trabalhos.pilha.${i + 1}" data-enquadrar="trabalhos.pilha.${i + 1}"></span></button>`).join("")}</div>
           <div>
             <p class="papel">${esc(t.papel)}${carimbo(t)}</p>
             <h2>${esc(t.titulo)}</h2>
             <div class="intro">${t.texto.map((p, i) => `<p data-editavel="trabalhos.social.${i}">${esc(p)}</p>`).join("")}</div>
           </div>
         </div>
-        ${t.cases.map((c, ci) => `
+        ${ordemClientes(t.cases.length).map((ci) => [t.cases[ci], ci]).map(([c, ci]) => `
           <section class="case" aria-labelledby="case-${ci}" data-case="${ci}">
             <header>
               <div>

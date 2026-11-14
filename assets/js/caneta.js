@@ -1,22 +1,19 @@
-/* Caneta Fake Blonde.
-   Clique/toque na caneta para pegá-la: ela acompanha o cursor (ou o dedo) com a ponta
-   exatamente no ponto do desenho. Pressione e arraste sobre o papel para rabiscar;
-   o traço some sozinho depois de soltar. "Devolver a caneta" ou Esc devolvem a caneta
-   à margem e a navegação volta ao normal. */
+/* Caneta Fake Blonde — um gesto só.
+   Pressione a caneta na margem e arraste direto para o papel: ela acompanha o mouse
+   ou o dedo com a ponta no ponto exato e desenha enquanto você segura.
+   Ao soltar (em qualquer lugar), ela volta para a margem e o traço some aos poucos. */
 (function () {
   const caneta = document.querySelector(".caneta");
   const tela = document.querySelector(".rabisco");
-  const devolver = document.querySelector(".devolver-caneta");
   if (!caneta || !tela) return;
-  if (devolver) document.body.appendChild(devolver); // fixo na tela, fora da folha
-  document.body.appendChild(caneta); // a caneta vive fixa na tela (margem ou na mão)
   const folha = tela.parentElement;
   const ctx = tela.getContext("2d");
   const COR = "#e0709f";
   const SOME = 1400;
-  // ponta da caneta: centro da largura, quase no fim da altura (desenho 24 × 150, ponta em 12, 148)
+  let tracos = [], atual = null, rodando = false, segurando = null;
+
+  document.body.appendChild(caneta); // fixa na tela: margem ou na mão
   const ponta = () => ({ x: caneta.offsetWidth / 2, y: caneta.offsetHeight * (148 / 150) });
-  let tracos = [], atual = null, rodando = false, naMao = false;
 
   function dimensiona() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -28,7 +25,6 @@
   }
   dimensiona();
   new ResizeObserver(dimensiona).observe(folha);
-  setTimeout(naMargem, 0);
 
   function desenha() {
     const agora = performance.now();
@@ -56,77 +52,53 @@
     else rodando = false;
   }
   const anima = () => { if (!rodando) { rodando = true; requestAnimationFrame(desenha); } };
-  const ponto = (e) => { const r = tela.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+  const noPapel = (x, y) => { const r = tela.getBoundingClientRect(); return { x: x - r.left, y: y - r.top }; };
 
-  // a caneta segue o ponteiro com a ponta no ponto exato
   function segue(x, y) {
     const p = ponta();
     caneta.style.left = x - p.x + "px";
     caneta.style.top = y - p.y + "px";
   }
-
-  // em repouso: fixa na margem esquerda da folha, na altura visível da tela
   function naMargem() {
-    if (naMao) return;
+    if (segurando !== null) return;
     const r = folha.getBoundingClientRect();
-    const estreita = innerWidth <= 900;
+    caneta.classList.remove("na-mao");
     caneta.classList.add("na-margem");
-    caneta.style.left = (estreita ? 2 : Math.max(4, r.left - caneta.offsetWidth - 8)) + "px";
+    caneta.style.left = (innerWidth <= 900 ? 2 : Math.max(4, r.left - caneta.offsetWidth - 8)) + "px";
     caneta.style.top = Math.round(innerHeight * 0.42 - caneta.offsetHeight / 2) + "px";
   }
   addEventListener("resize", naMargem);
-  function onMove(e) { if (naMao) segue(e.clientX, e.clientY); }
+  setTimeout(naMargem, 0);
 
-  const casa = { pai: caneta.parentElement, depois: caneta.nextSibling };
-  function pegar(x, y) {
-    naMao = true;
-    document.body.appendChild(caneta); // fora da folha, para seguir a tela inteira
+  // pressionar a caneta já começa o gesto
+  caneta.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    segurando = e.pointerId;
+    try { caneta.setPointerCapture(e.pointerId); } catch (_) {}
     caneta.classList.remove("na-margem");
     caneta.classList.add("na-mao");
-    caneta.setAttribute("aria-pressed", "true");
     document.body.classList.add("caneta-ativa");
-    if (devolver) devolver.hidden = false;
-    segue(x, y);
-    document.addEventListener("pointermove", onMove);
-  }
-  function soltar() {
-    if (!naMao) return;
-    naMao = false;
-    caneta.classList.remove("na-mao");
-    naMargem(); // volta para a margem, na altura visível agora
-    caneta.setAttribute("aria-pressed", "false");
-    document.body.classList.remove("caneta-ativa");
-    if (devolver) devolver.hidden = true;
-    document.removeEventListener("pointermove", onMove);
-    caneta.focus({ preventScroll: true });
-  }
-
-  caneta.addEventListener("click", (e) => {
-    if (naMao) return;
-    const r = caneta.getBoundingClientRect();
-    // clique pelo teclado não tem coordenadas: a caneta começa perto da margem
-    const x = e.clientX || r.left + r.width / 2 + 60;
-    const y = e.clientY || r.top + r.height / 2;
-    pegar(x, y);
-  });
-  if (devolver) devolver.addEventListener("click", soltar);
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") soltar(); });
-
-  tela.addEventListener("pointerdown", (e) => {
-    if (!naMao) return;
-    e.preventDefault();
-    try { tela.setPointerCapture(e.pointerId); } catch (_) {}
     segue(e.clientX, e.clientY);
-    atual = { pts: [ponto(e)], fim: null };
+    atual = { pts: [noPapel(e.clientX, e.clientY)], fim: null };
     tracos.push(atual);
     anima();
   });
-  tela.addEventListener("pointermove", (e) => {
-    if (!atual) return;
+  caneta.addEventListener("pointermove", (e) => {
+    if (e.pointerId !== segurando) return;
     const lista = e.getCoalescedEvents ? e.getCoalescedEvents() : [];
-    for (const ev of lista.length ? lista : [e]) atual.pts.push(ponto(ev));
+    for (const ev of lista.length ? lista : [e]) atual.pts.push(noPapel(ev.clientX, ev.clientY));
+    segue(e.clientX, e.clientY);
   });
-  const fimTraco = () => { if (atual) { atual.fim = performance.now(); atual = null; anima(); } };
-  tela.addEventListener("pointerup", fimTraco);
-  tela.addEventListener("pointercancel", fimTraco);
+  function soltar(e) {
+    if (segurando === null || (e && e.pointerId !== segurando)) return;
+    segurando = null;
+    if (atual) { atual.fim = performance.now(); atual = null; anima(); }
+    document.body.classList.remove("caneta-ativa");
+    naMargem();
+  }
+  caneta.addEventListener("pointerup", soltar);
+  caneta.addEventListener("pointercancel", soltar);
+  caneta.addEventListener("lostpointercapture", soltar);
+  caneta.addEventListener("click", (e) => e.preventDefault());
+  caneta.addEventListener("dragstart", (e) => e.preventDefault());
 })();

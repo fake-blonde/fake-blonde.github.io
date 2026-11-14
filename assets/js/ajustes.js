@@ -1,13 +1,92 @@
 /* Ajustes salvos pela prévia editável (python ferramentas/servidor_edicao.py).
    Entram na versão publicada e prevalecem sobre os padrões de conteudo.js. */
-window.AJUSTES_VERSAO = "1794615004613";
+window.AJUSTES_VERSAO = "1794685045405";
 window.AJUSTES = {
   "textos": {
     "fotografia.sub": "Um rolo de cada vez."
   },
-  "enquadrar": {},
+  "enquadrar": {
+    "peca.video-mwfm52e4": {
+      "zoom": 1,
+      "x": 41.2,
+      "y": 77.5,
+      "tam": 1
+    },
+    "peca.video-mwfm97vj": {
+      "zoom": 1,
+      "x": 45.6,
+      "y": 32.2,
+      "tam": 1
+    },
+    "peca.video-mwfm9uqy": {
+      "zoom": 1,
+      "x": 59.1,
+      "y": 78.1,
+      "tam": 1
+    },
+    "peca.fv-ep02": {
+      "zoom": 1,
+      "x": 43.7,
+      "y": 43.4,
+      "tam": 1
+    },
+    "peca.fv-ep01": {
+      "zoom": 1,
+      "x": 30,
+      "y": 28.4,
+      "tam": 1
+    },
+    "peca.fv-ep03": {
+      "zoom": 1,
+      "x": 47.8,
+      "y": 19,
+      "tam": 1
+    },
+    "peca.fv-ep04": {
+      "zoom": 1,
+      "x": 54.7,
+      "y": 39.4,
+      "tam": 1
+    },
+    "trabalhos.pilha.2": {
+      "zoom": 1.26,
+      "x": 49.2,
+      "y": 29.4,
+      "tam": 1
+    },
+    "indice.pasta-trabalhos.2": {
+      "zoom": 1,
+      "x": 49,
+      "y": 3.3,
+      "tam": 1
+    },
+    "indice.pasta-trabalhos.1": {
+      "zoom": 1.11,
+      "x": 67,
+      "y": 57.5,
+      "tam": 1
+    },
+    "indice.pasta-fotos.fachada": {
+      "zoom": 1.11,
+      "x": 24.7,
+      "y": 100,
+      "tam": 1.12,
+      "prop": 1.32,
+      "acima": -20
+    },
+    "sobre.retrato": {
+      "zoom": 1.16,
+      "x": 36.4,
+      "y": 53.3,
+      "tam": 1
+    }
+  },
   "capas": {
-    "indice.pasta-trabalhos.1": "assets/img/trabalhos/ollie-capa.jpg"
+    "indice.pasta-trabalhos.1": "assets/img/trabalhos/ollie-capa.jpg",
+    "trabalhos.pilha.3": "assets/img/enviadas/Capa-sab.jpg",
+    "trabalhos.pilha.1": "assets/img/carrosseis/bm-duvida/01.jpg",
+    "trabalhos.pilha.2": "assets/img/enviadas/Capa-KIKI-em-azul-ard-sia-uniforme.png",
+    "indice.pasta-trabalhos.2": "assets/img/social/pcd-remada.jpg"
   },
   "ordem": {
     "fotos": [
@@ -31,6 +110,12 @@ window.AJUSTES = {
       "foto-16",
       "foto-19",
       "foto-20"
+    ],
+    "clientes": [
+      0,
+      1,
+      2,
+      3
     ]
   },
   "midias": {
@@ -53,6 +138,26 @@ window.AJUSTES = {
         "alt": "Carrossel: uma história de luta que continua sendo escrita"
       },
       {
+        "id": "imagem-mwgsgip8",
+        "tipo": "video",
+        "alt": "Reels: entrevista com Raquel",
+        "src": "assets/video/enviados/Entrevista-Raquel-web.mp4",
+        "capa": "assets/img/enviadas/Capa-Reels-Entrevista-Raquel-1-.jpg"
+      },
+      {
+        "id": "imagem-mwgsi6n2",
+        "tipo": "imagem",
+        "alt": "Sábado em movimento",
+        "src": "assets/img/enviadas/sabado-em-movimento.gif"
+      },
+      {
+        "id": "video-mwfm52e4",
+        "tipo": "video",
+        "alt": "Reels: comemoração + remada de 29/08",
+        "src": "assets/video/enviados/Comemora-o-Remada-29_08-web.mp4",
+        "capa": "assets/img/social/pcd-vem-passar-um-dia.jpg"
+      },
+      {
         "id": "pcd-libras",
         "tipo": "carrossel",
         "slides": [
@@ -63,13 +168,6 @@ window.AJUSTES = {
           "assets/img/carrosseis/pcd-libras/05.jpg"
         ],
         "alt": "Carrossel: você sabia que existem centenas de línguas de sinais no mundo?"
-      },
-      {
-        "id": "video-mwfm52e4",
-        "tipo": "video",
-        "alt": "Reels: comemoração + remada de 29/08",
-        "src": "assets/video/enviados/Comemora-o-Remada-29_08-web.mp4",
-        "capa": "assets/img/social/pcd-vem-passar-um-dia.jpg"
       },
       {
         "id": "pcd-remada",
@@ -235,5 +333,6 @@ window.AJUSTES = {
         "alt": "Episódio 4: São Paulo"
       }
     ]
-  }
+  },
+  "galeria": {}
 };

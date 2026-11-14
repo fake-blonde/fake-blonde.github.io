@@ -824,3 +824,44 @@ a { color: inherit; }
 .projeto .topo .aberto p { font-size: 16px; max-width: 52ch; }
 @media (max-width: 900px) { .pilha { height: 74vw; max-height: 380px; } }
 .mosaico.pilha img { left: auto; top: auto; transform: none; }
+
+/* =====================================================================
+   v7
+   ===================================================================== */
+/* Moldura branca, sombra e inclinação são do card; a imagem fica num quadro interno
+   (zoom e troca de imagem nunca cobrem a borda) */
+.pilha-item { overflow: visible; }
+.pilha-foto, .quadro-int { display: block; width: 100%; height: 100%; overflow: hidden; }
+.pilha-foto img, .quadro-int img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.mini-foto, .capinha { overflow: visible; }
+
+/* Caneta: um gesto só */
+.caneta { touch-action: none; cursor: grab; }
+.caneta.na-mao { pointer-events: auto; cursor: grabbing; }
+.caneta-ativa, .caneta-ativa * { user-select: none; -webkit-user-select: none; }
+.devolver-caneta { display: none !important; }
+
+/* Galeria: largura escolhida para fotos sozinhas; quadro para zoom/posição */
+.galeria .linha.grande.com-largura figure { max-width: 100%; }
+.galeria .quadro-foto { display: block; overflow: hidden; }
+.galeria .quadro-foto img { display: block; }
+
+/* Sobre */
+.sobre { grid-template-areas: "carteira corpo" "carteira contatos"; }
+.sobre .licenca-grande { grid-area: carteira; }
+.sobre .corpo { grid-area: corpo; }
+.sobre .contatos { grid-area: contatos; margin-top: 0; align-self: start; }
+.so-estreito { display: none; }
+@media (max-width: 900px) {
+  .galeria .linha.grande.com-largura figure { width: 100% !important; }
+  /* carteirinha à esquerda, contatos empilhados à direita, bio embaixo */
+  .sobre { grid-template-columns: minmax(0, 46%) minmax(0, 1fr); grid-template-areas: "carteira contatos" "corpo corpo"; gap: var(--e4) 12px; }
+  .sobre .licenca-grande { width: 100%; padding: 10px; transform: rotate(-2deg); }
+  .sobre .licenca-grande strong { font-size: 16px; }
+  .sobre .licenca-grande small { font-size: 11px; }
+  .sobre .contatos { grid-template-columns: 1fr; gap: 8px; align-self: center; }
+  .sobre .contatos li, .sobre .contatos a { min-width: 0; }
+  .sobre .contatos a { width: 100%; padding: 8px 10px; font-size: 14px; gap: 8px; }
+  .so-largo { display: none; }
+  .so-estreito { display: inline; }
+}
