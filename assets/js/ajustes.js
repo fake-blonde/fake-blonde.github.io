@@ -1,6 +1,6 @@
 /* Ajustes salvos pela prévia editável (python ferramentas/servidor_edicao.py).
    Entram na versão publicada e prevalecem sobre os padrões de conteudo.js. */
-window.AJUSTES_VERSAO = "1794685045405";
+window.AJUSTES_VERSAO = "1794685498215";
 window.AJUSTES = {
   "textos": {
     "fotografia.sub": "Um rolo de cada vez."
@@ -49,9 +49,9 @@ window.AJUSTES = {
       "tam": 1
     },
     "trabalhos.pilha.2": {
-      "zoom": 1.26,
-      "x": 49.2,
-      "y": 29.4,
+      "zoom": 1.18,
+      "x": 48.7,
+      "y": 18.5,
       "tam": 1
     },
     "indice.pasta-trabalhos.2": {
@@ -97,11 +97,11 @@ window.AJUSTES = {
       "foto-05",
       "foto-07",
       "foto-04",
+      "foto-01",
       "foto-03",
       "foto-14",
-      "foto-06",
-      "foto-01",
       "foto-12",
+      "foto-06",
       "foto-13",
       "foto-17",
       "foto-08",
@@ -114,8 +114,8 @@ window.AJUSTES = {
     "clientes": [
       0,
       1,
-      2,
-      3
+      3,
+      2
     ]
   },
   "midias": {
@@ -334,5 +334,24 @@ window.AJUSTES = {
       }
     ]
   },
-  "galeria": {}
+  "galeria": {
+    "foto-10": {
+      "junto": true
+    },
+    "foto-05": {
+      "junto": true
+    },
+    "foto-03": {
+      "junto": true
+    },
+    "foto-01": {
+      "junto": true
+    },
+    "foto-17": {
+      "junto": true
+    },
+    "foto-15": {
+      "junto": true
+    }
+  }
 };
