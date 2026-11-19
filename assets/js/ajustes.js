@@ -1,6 +1,6 @@
 /* Ajustes salvos pela prévia editável (python ferramentas/servidor_edicao.py).
    Entram na versão publicada e prevalecem sobre os padrões de conteudo.js. */
-window.AJUSTES_VERSAO = "1795058997152";
+window.AJUSTES_VERSAO = "1795060700071";
 window.AJUSTES = {
   "textos": {
     "fotografia.sub": "Um rolo de cada vez."
@@ -14,8 +14,8 @@ window.AJUSTES = {
     },
     "peca.video-mwfm97vj": {
       "zoom": 1,
-      "x": 45.6,
-      "y": 32.2,
+      "x": 45,
+      "y": 34.1,
       "tam": 1
     },
     "peca.video-mwfm9uqy": {
@@ -79,6 +79,19 @@ window.AJUSTES = {
       "x": 36.4,
       "y": 53.3,
       "tam": 1
+    },
+    "textos.capa.loira-falsa": {
+      "zoom": 1,
+      "x": 50,
+      "y": 50,
+      "tam": 1.01,
+      "prop": 1.02
+    },
+    "peca.imagem-mwgsgip8": {
+      "zoom": 1,
+      "x": 35,
+      "y": 14.4,
+      "tam": 1
     }
   },
   "capas": {
@@ -86,7 +99,8 @@ window.AJUSTES = {
     "trabalhos.pilha.3": "assets/img/enviadas/Capa-sab.jpg",
     "trabalhos.pilha.1": "assets/img/carrosseis/bm-duvida/01.jpg",
     "trabalhos.pilha.2": "assets/img/enviadas/Capa-KIKI-em-azul-ard-sia-uniforme.png",
-    "indice.pasta-trabalhos.2": "assets/img/social/pcd-remada.jpg"
+    "indice.pasta-trabalhos.2": "assets/img/social/pcd-remada.jpg",
+    "textos.capa.loira-falsa": "assets/img/abertura/infancia-balanco.jpg"
   },
   "ordem": {
     "fotos": [
@@ -352,6 +366,153 @@ window.AJUSTES = {
     },
     "foto-15": {
       "junto": true
+    }
+  },
+  "composicao": {
+    "desktop": {
+      "itens": {
+        "foto-11": {
+          "x": 0,
+          "y": 0,
+          "w": 1,
+          "h": 0.6667,
+          "recorte": false
+        },
+        "foto-10": {
+          "x": 0,
+          "y": 0.7039,
+          "w": 0.6688,
+          "h": 0.4459,
+          "recorte": false
+        },
+        "foto-18": {
+          "x": 0.6841,
+          "y": 0.726,
+          "w": 0.2992,
+          "h": 0.4458,
+          "recorte": false
+        },
+        "foto-02": {
+          "x": 0.0252,
+          "y": 1.2018,
+          "w": 0.4479,
+          "h": 0.6718,
+          "recorte": false
+        },
+        "foto-05": {
+          "x": 0.0072,
+          "y": 1.9137,
+          "w": 0.6688,
+          "h": 0.4459,
+          "recorte": false
+        },
+        "foto-07": {
+          "x": 0.6975,
+          "y": 1.9137,
+          "w": 0.2992,
+          "h": 0.4458,
+          "recorte": false
+        },
+        "foto-04": {
+          "x": 0.4983,
+          "y": 1.5618,
+          "w": 0.4677,
+          "h": 0.3118,
+          "recorte": false
+        },
+        "foto-01": {
+          "x": 0,
+          "y": 3.0862,
+          "w": 0.6708,
+          "h": 0.4442,
+          "recorte": false
+        },
+        "foto-03": {
+          "x": 0.6991,
+          "y": 3.1161,
+          "w": 0.2972,
+          "h": 0.4443,
+          "recorte": false
+        },
+        "foto-14": {
+          "x": 0,
+          "y": 3.6016,
+          "w": 1,
+          "h": 0.6711,
+          "recorte": false
+        },
+        "foto-12": {
+          "x": 0,
+          "y": 4.3163,
+          "w": 1,
+          "h": 0.6667,
+          "recorte": false
+        },
+        "foto-06": {
+          "x": 0,
+          "y": 6.1538,
+          "w": 1,
+          "h": 0.6622,
+          "recorte": false
+        },
+        "foto-13": {
+          "x": 0,
+          "y": 5.43,
+          "w": 1,
+          "h": 0.6822,
+          "recorte": false
+        },
+        "foto-17": {
+          "x": 0.0372,
+          "y": 5.0258,
+          "w": 0.4144,
+          "h": 0.2726,
+          "recorte": false
+        },
+        "foto-08": {
+          "x": 0.4813,
+          "y": 5.0529,
+          "w": 0.5017,
+          "h": 0.3367,
+          "recorte": false
+        },
+        "foto-09": {
+          "x": 0.0065,
+          "y": 6.846,
+          "w": 0.4983,
+          "h": 0.3322,
+          "recorte": false
+        },
+        "foto-15": {
+          "x": 0.4986,
+          "y": 1.2018,
+          "w": 0.4677,
+          "h": 0.3461,
+          "recorte": false
+        },
+        "foto-16": {
+          "x": 0.5331,
+          "y": 6.9128,
+          "w": 0.3981,
+          "h": 0.2654,
+          "recorte": false
+        },
+        "foto-19": {
+          "x": 0,
+          "y": 2.3895,
+          "w": 1,
+          "h": 0.6667,
+          "recorte": false
+        },
+        "foto-20": {
+          "x": 0,
+          "y": 7.2186,
+          "w": 1,
+          "h": 0.6578,
+          "recorte": false
+        }
+      },
+      "gap": 0.03
     }
   }
 };
