@@ -1,6 +1,6 @@
 /* Ajustes salvos pela prévia editável (python ferramentas/servidor_edicao.py).
    Entram na versão publicada e prevalecem sobre os padrões de conteudo.js. */
-window.AJUSTES_VERSAO = "1794685498215";
+window.AJUSTES_VERSAO = "1795058997152";
 window.AJUSTES = {
   "textos": {
     "fotografia.sub": "Um rolo de cada vez."

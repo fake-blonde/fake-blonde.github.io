@@ -174,10 +174,42 @@
       });
     const gal = document.getElementById("galeria");
     let lista = [];
+    const ajustaUnidade = window.ajustaUnidadeGaleria = () => {
+      if (gal.classList.contains("livre")) gal.style.setProperty("--u", gal.clientWidth + "px");
+    };
+    new ResizeObserver(ajustaUnidade).observe(gal);
+    let larguraAnterior = innerWidth;
+    addEventListener("resize", () => {
+      // troca entre layout de desktop e de celular ao cruzar 900px
+      if ((larguraAnterior <= 900) !== (innerWidth <= 900)) window.renderFotografia();
+      larguraAnterior = innerWidth;
+    });
     window.renderFotografia = () => {
       const fotos = ordena(P.fotografia.fotos.filter(vis), "fotos", (f) => f.arquivo);
       return Promise.all(fotos.map(medir)).then((l) => {
         lista = l;
+        // ---- Composição livre (AJ().composicao.desktop / .mobile) ----
+        // Cada foto: { x, y, w, h } em frações da largura da galeria (escala com a tela), recorte: true/false.
+        const celular = !!window.__previaCelular || matchMedia("(max-width: 900px)").matches;
+        const C = AJ().composicao || {};
+        const L = celular ? (C.mobile || null) : (C.desktop || null);
+        gal.classList.toggle("previa-celular", !!window.__previaCelular);
+        if (L && L.itens && Object.keys(L.itens).length) {
+          renderLivre(L);
+          return;
+        }
+        gal.classList.remove("livre");
+        gal.style.removeProperty("--u");
+        gal.style.height = "";
+        if (celular && C.desktop && C.desktop.itens) {
+          // celular sem composição própria: mesma sequência da composição do desktop (de cima para baixo), uma foto por vez
+          const pos = C.desktop.itens;
+          lista.sort((a, b) => ((pos[a.arquivo] || {}).y ?? 99) - ((pos[b.arquivo] || {}).y ?? 99) || ((pos[a.arquivo] || {}).x ?? 0) - ((pos[b.arquivo] || {}).x ?? 0));
+          window.__fotosEmOrdem = lista.map((f) => f.arquivo);
+          gal.innerHTML = lista.map((f, idx) => `<div class="linha grande paisagem">${figura(idx, "")}</div>`).join("");
+          if (window.aplicarAjustesDOM) window.aplicarAjustesDOM();
+          return;
+        }
         // Composição: AJ().galeria[id] = { junto: true (fica ao lado da próxima), larg: % quando sozinha, peso: espaço no par }
         const comp = window.composicaoGaleria = (window.composicaoGaleria0 = () => {
           const salvo = AJ().galeria || {};
@@ -195,6 +227,33 @@
           const g = comp[lista[i].arquivo] || {};
           if (g.junto && i < lista.length - 1) { linhas.push([i, i + 1]); i++; }
           else linhas.push([i]);
+        }
+        function renderLivre(L) {
+          const itens = L.itens;
+          const ids = lista.map((f) => f.arquivo).filter((id) => itens[id]);
+          // ordem de leitura (para o visualizador e leitores de tela): de cima para baixo, da esquerda para a direita
+          ids.sort((a, b) => itens[a].y - itens[b].y || itens[a].x - itens[b].x);
+          lista = ids.map((id) => lista.find((f) => f.arquivo === id));
+          window.__fotosEmOrdem = ids;
+          const fundo = Math.max(...ids.map((id) => itens[id].y + itens[id].h), 0.2);
+          gal.classList.add("livre");
+          gal.style.setProperty("--fundo", fundo);
+          gal.innerHTML = lista.map((f, idx) => {
+            const it = itens[f.arquivo];
+            return `<div class="item-livre" data-livre="${f.arquivo}" style="--x:${it.x};--y:${it.y};--w:${it.w};--h:${it.h}">${figura(idx, "", true)}</div>`;
+          }).join("");
+          ajustaUnidade();
+          if (window.aplicarAjustesDOM) window.aplicarAjustesDOM();
+        }
+        function figura(idx, estilo, livre) {
+          const f = lista[idx];
+          const leg = legenda(f);
+          return `<figure style="${estilo}" data-foto="${f.arquivo}">
+            <button type="button" data-i="${idx}" aria-label="Ampliar foto ${idx + 1} de ${lista.length}">
+              <span class="quadro-foto"><img src="${src(f, true)}" width="${f.w}" height="${f.h}" loading="${idx < 3 ? "eager" : "lazy"}" data-enquadrar="foto.${f.arquivo}" alt="Fotografia analógica ${idx + 1}${leg ? ", " + esc(leg) : ""}"></span>
+            </button>
+            ${leg && !livre ? `<figcaption>${esc(leg)}</figcaption>` : ""}
+          </figure>`;
         }
         const fig = (idx, flex) => {
           const f = lista[idx];
@@ -221,6 +280,7 @@
       const b = e.target.closest("button[data-i]");
       if (!b || !window.abrirVisualizador) return;
       const itens = lista.map((f, n) => ({ tipo: "imagem", src: src(f, false), alt: `Fotografia analógica ${n + 1}`, legenda: legenda(f) || P.fotografia.ficha }));
+      if (document.body.classList.contains("ed-ativo")) return;
       window.abrirVisualizador(itens, Number(b.dataset.i), b);
     });
   }
@@ -280,27 +340,45 @@
 
     const projeto = (t) => {
       const links = (t.links || []).filter((l) => l.confirmado !== false || window.RASCUNHO);
+      const k = `trabalhos.${t.id}`;
+      const temDetalhe = !t.emBreve && ((t.texto && t.texto.length) || (t.secoes && t.secoes.length) || (t.intro && t.intro.length));
+      const imagemCase = (im) => `
+        <figure class="imagem-case" data-tamanho data-controles="tam" style="margin:0">
+          <button type="button" class="ampliar-case" data-src="${esc(im.src)}" aria-label="Ampliar: ${esc(im.alt)}">
+            <span class="quadro-int"><img src="${esc(capaDe(im.src))}" alt="${esc(im.alt)}"${im.w ? ` width="${im.w}" height="${im.h}"` : ""} loading="lazy" data-capa="${esc(im.src)}" data-capa-chave="${k}.imagem" data-enquadrar="${k}.imagem"></span>
+          </button>
+        </figure>`;
+      const secoes = (t.secoes || []).map((sec, n) => `
+          <section class="secao-case">
+            <h3 data-editavel="${k}.sec.${n}.titulo">${esc(sec.titulo)}</h3>
+            <p data-editavel="${k}.sec.${n}.texto">${esc(sec.texto)}</p>
+          </section>
+          ${t.imagem && t.imagem.depoisDe === sec.titulo ? imagemCase(t.imagem) : ""}`).join("");
+      const detalhe = temDetalhe ? `<div class="aberto" id="aberto-${t.id}" hidden>
+            ${(t.intro || []).map((x, n) => `<p data-editavel="${k}.intro.${n}">${esc(x)}</p>`).join("")}
+            ${(t.texto || []).map((x, n) => `<p data-editavel="${k}.texto.${n}">${esc(x)}</p>`).join("")}
+            ${t.imagem && !t.imagem.depoisDe ? imagemCase(t.imagem) : ""}
+            ${secoes}
+          </div>` : "";
       return `
       <article class="projeto${t.emBreve ? " em-breve" : ""}" id="${t.id}">
         <div class="topo">
-          <div class="capa${t.capaFormato === "retrato" ? " retrato" : ""}">
-            <img src="${esc(capaDe(t.capa))}" alt="Capa do projeto ${esc(t.titulo)}" loading="lazy" data-capa="${esc(t.capa)}" data-enquadrar="capa.${t.id}">
+          <div class="capa${t.capaFormato === "retrato" ? " retrato" : ""}" data-tamanho data-controles="tam">
+            <span class="quadro-int"><img src="${esc(capaDe(t.capa))}" alt="Capa do projeto ${esc(t.titulo)}" loading="lazy" data-capa="${esc(t.capa)}" data-capa-chave="capa.${t.id}" data-enquadrar="capa.${t.id}"></span>
             ${t.emBreve ? '<span class="selo-breve">Em breve</span>' : ""}
           </div>
           <div>
-            <p class="papel">${esc(t.papel)}${carimbo(t)}</p>
+            <p class="papel"><span data-editavel="${k}.papel">${esc(t.papel)}</span>${carimbo(t)}</p>
             <div class="titulo-linha">
-              <h2>${esc(t.titulo)}</h2>
-              ${!t.emBreve && t.texto && t.texto.length ? `<button type="button" class="abrir-projeto" aria-expanded="false" aria-controls="aberto-${t.id}" aria-label="Abrir o projeto ${esc(t.titulo)}">+</button>` : ""}
+              <h2 data-editavel="${k}.titulo">${esc(t.titulo)}</h2>
+              ${temDetalhe ? `<button type="button" class="abrir-projeto" aria-expanded="false" aria-controls="aberto-${t.id}" aria-label="Abrir o projeto ${esc(t.titulo)}">+</button>` : ""}
             </div>
-            <p class="resumo">${esc(t.resumo)}</p>
-            ${!t.emBreve && t.texto && t.texto.length
-              ? `<div class="aberto" id="aberto-${t.id}" hidden>${t.texto.map((p) => `<p>${esc(p)}</p>`).join("")}</div>`
-              : ""}
+            <p class="resumo" data-editavel="${k}.resumo">${esc(t.resumo)}</p>
+            ${detalhe}
             ${links.length ? `<ul class="links">${links.map((l) => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.rotulo)} ↗</a></li>`).join("")}</ul>` : ""}
           </div>
         </div>
-        ${t.galeria && t.galeria.length ? `<div class="galeria-projeto" id="galeria-${t.id}">${t.galeria.map((s, i) => `<figure style="margin:0" class="${i === 0 ? "destaque" : ""}"><img src="${esc(s)}" alt="" loading="lazy"></figure>`).join("")}</div>` : ""}
+        ${t.galeria && t.galeria.length ? `<div class="galeria-projeto" id="galeria-${t.id}">${t.galeria.map((g, n) => `<figure style="margin:0" class="${n === 0 ? "destaque" : ""}"><img src="${esc(g)}" alt="" loading="lazy"></figure>`).join("")}</div>` : ""}
       </article>`;
     };
 
@@ -365,6 +443,12 @@
       });
     });
 
+    document.querySelectorAll(".ampliar-case").forEach((b) => b.addEventListener("click", () => {
+      if (document.body.classList.contains("ed-ativo") || !window.abrirVisualizador) return;
+      const img = b.querySelector("img");
+      window.abrirVisualizador([{ tipo: "imagem", src: img.getAttribute("src"), alt: img.alt, legenda: img.alt }], 0, b);
+    }));
+
     document.querySelectorAll(".abrir-projeto").forEach((b) => {
       b.addEventListener("click", () => {
         const alvo = document.getElementById(b.getAttribute("aria-controls"));
@@ -397,6 +481,17 @@
         quadro.style.setProperty("--acima", e && e.acima != null ? e.acima : "");
         if (!(e && e.prop)) quadro.style.removeProperty("--prop");
         if (!(e && e.acima != null)) quadro.style.removeProperty("--acima");
+        // formato da moldura para qualquer imagem (a fachada da pasta usa --prop no CSS)
+        if (!(quadro.dataset.controles || "").includes("prop")) {
+          const moldura = el.parentElement;
+          const p = e && e.prop;
+          moldura.style.aspectRatio = p ? `1 / ${p}` : "";
+          moldura.style.height = p ? "auto" : "";
+          moldura.style.overflow = p ? "hidden" : "";
+          el.style.width = p ? "100%" : "";
+          el.style.height = p ? "100%" : "";
+          el.style.aspectRatio = p ? "auto" : "";
+        }
       }
     });
     document.querySelectorAll("img[data-capa]").forEach((img) => {

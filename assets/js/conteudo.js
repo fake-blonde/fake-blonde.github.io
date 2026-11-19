@@ -196,14 +196,18 @@ window.PORTFOLIO = {
       papel: "Direção de arte · campanha acadêmica",
       capa: "assets/img/trabalhos/ollie-capa.jpg",
       capaFormato: "retrato",
-      resumo:
-        "Campanha para uma marca vegana de protetor solar que ainda não refletia a pluralidade de quem a consome: cinco peles, cinco idades, cinco texturas de cabelo.",
-      texto: [
-        "A Ollie se posiciona como uma marca consciente, mas pouco representativa. A campanha parte desse gap: construir uma comunicação que finalmente fizesse sentido para esse público, reconhecendo diferentes histórias, corpos e vivências.",
-        "O universo visual vem da propaganda de cosmético dos anos 80: luz de estúdio limpa, cor sólida como fundo, sorriso sem pose, retrato frontal que lembra foto de família. Amarelo Ollie como marca-registro, tons pastel nas roupas e composição em grade, sem hierarquia entre pele e mercadoria.",
-        "Slogan: “Proteja cada tom. Valoriza cada história.”",
+      /* Texto original do case no Readymag (página Ollie). */
+      resumo: "A Ollie se posiciona como uma marca consciente, mas pouco representativa.",
+      intro: ["A campanha parte desse gap: uma marca vegana, brasileira, voltada para cuidado real que ainda não refletia a pluralidade de quem a consome. O trabalho foi construir uma comunicação que finalmente fizesse sentido para esse público, reconhecendo diferentes histórias, corpos e vivências."],
+      imagem: { src: "assets/img/trabalhos/ollie-modelos.jpg", w: 1600, h: 908, alt: "Grade da campanha Ollie: retratos das modelos segurando o protetor solar junto ao rosto, entre fotos do produto", depoisDe: "Direção" },
+      secoes: [
+        { titulo: "Conceito", texto: "Proteção, Cuidado e Beleza para Peles Brasileiras. Peles da Diversidade. Um reposicionamento: o protetor solar como gesto de reconhecimento. Proteger a pele é proteger a história de quem está dentro dela. A campanha não vende um produto — propõe um estilo de vida onde cada pele é vista, cuidada e valorizada." },
+        { titulo: "Universo", texto: "Nem praia nem dermatologia. A Ollie vive num terceiro território brasileiro: o cuidado doméstico da propaganda de cosmético dos anos 80 — Natura primeiros anos, Monange, sabonete em revista de banca. Luz de estúdio limpa, cor sólida como fundo, sorriso sem pose, retrato frontal que lembra foto de família mais do que campanha. Uma nostalgia deslocada: a estética afetiva do passado aplicada pra corrigir o casting que essa estética nunca teve. A Ollie não vira retrô, passa a herdar o calor humano daquela imagem e devolve com a pele que faltava." },
+        { titulo: "Direção", texto: "Casting de cinco peles, cinco idades, cinco texturas de cabelo. Retrato frontal, fundo neutro, sem estilismo de moda — o corpo é o assunto. Cada modelo segura o produto no rosto: o gesto vira parte do retrato, não pose de reclame." },
+        { titulo: "Sistema visual", texto: "Amarelo Ollie como marca-registro, sustentado por uma paleta suave de tons pastel nas roupas (verde-água, amarelo manteiga, azul leite). A embalagem em lilás e amarelo entra como cor, não como packshot. Composição em grade: retratos e produto no mesmo nível hierárquico, sem hierarquia entre pele e mercadoria." },
+        { titulo: "Tipografia e peça", texto: "Wordmark existente da marca preservado. Para a peça publicitária, tipografia serifada em rosa sobre imagem quente e vegetal — deslocando a Ollie do registro clínico para o registro afetivo." },
+        { titulo: "Slogan", texto: "Proteja cada tom. Valoriza cada história." },
       ],
-      galeria: [],
       links: [],
       confirmado: true,
     },

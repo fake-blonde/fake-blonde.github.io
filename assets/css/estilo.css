@@ -865,3 +865,34 @@ a { color: inherit; }
   .so-largo { display: none; }
   .so-estreito { display: inline; }
 }
+
+/* =====================================================================
+   v8 — case Ollie completo
+   ===================================================================== */
+.projeto .capa { overflow: visible; }
+.projeto .capa .quadro-int { width: 100%; height: auto; }
+.projeto .capa .quadro-int img { aspect-ratio: 4 / 3; height: auto; }
+.projeto .capa.retrato .quadro-int img { aspect-ratio: 4 / 5; }
+.projeto .capa[data-tamanho] { width: calc(100% * var(--tam, 1)); justify-self: center; }
+.projeto .capa.retrato[data-tamanho] { width: min(100%, calc(420px * var(--tam, 1))); }
+.secao-case h3 { font: 500 12.5px/1.3 var(--mono); letter-spacing: .02em; color: var(--tinta-3); margin: var(--e4) 0 4px; }
+.secao-case p { margin: 0; }
+.imagem-case { margin: var(--e4) 0 !important; width: calc(100% * var(--tam, 1)); max-width: 100%; }
+.ampliar-case { all: unset; display: block; width: 100%; box-sizing: border-box; cursor: zoom-in; background: #fff; padding: 6px; box-shadow: 0 10px 20px -14px rgba(40,25,10,.5); }
+.ampliar-case:focus-visible { outline: 2px solid var(--rosa); outline-offset: 3px; }
+.imagem-case .quadro-int { height: auto; }
+.imagem-case .quadro-int img { width: 100%; height: auto; object-fit: cover; }
+.mini-foto.m1, .mini-foto.m3 { width: calc(44% * var(--tam, 1)); }
+
+/* Galeria em composição livre: posições em frações da largura (--u = largura da galeria) */
+.galeria.livre { display: block; position: relative; height: calc(var(--u, 1000px) * var(--fundo, 1)); }
+.galeria.livre .item-livre {
+  position: absolute; left: calc(var(--u) * var(--x)); top: calc(var(--u) * var(--y));
+  width: calc(var(--u) * var(--w)); height: calc(var(--u) * var(--h));
+}
+.galeria.livre figure, .galeria.livre button, .galeria.livre .quadro-foto { width: 100%; height: 100%; }
+.galeria.livre .quadro-foto img { width: 100%; height: 100%; object-fit: cover; }
+.galeria.previa-celular { width: 343px; max-width: 100%; margin: 0 auto; outline: 1px dashed var(--linha); outline-offset: 12px; }
+.galeria.previa-celular:not(.livre) { display: flex; flex-direction: column; gap: 18px; }
+.galeria.previa-celular:not(.livre) .linha { flex-direction: column; }
+.galeria.previa-celular:not(.livre) figure { width: 100% !important; margin-top: 0 !important; }
